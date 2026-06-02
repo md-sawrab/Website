@@ -1,0 +1,2194 @@
+<!DOCTYPE html>
+<!-- saved from url=(0100)file:///C:/Users/User/Downloads/RSGT%20HSSE%20%E2%80%94%20PPE%20&%20Store%20Management%20System.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RSGT HSSE — PPE &amp; Store Management System</title>
+<link href="./RSGT HSSE — PPE &amp; Store Management System_files/css2" rel="stylesheet">
+<style>
+  :root {
+    /* RSGT poster palette */
+    --navy:       #0b1e3d;
+    --navy-mid:   #102848;
+    --navy-light: #1a3a60;
+    --teal:       #006b6b;
+    --teal-mid:   #008080;
+    --teal-light: #00a8a8;
+    --green:      #1a6e2e;
+    --accent:     #f4a31a;
+    --accent-dim: rgba(244,163,26,0.15);
+    --danger:     #e84040;
+    --success:    #2dce89;
+    --warning:    #fb6340;
+    --text:       #c8d8ea;
+    --text-dim:   #6a8aa8;
+    --border:     rgba(255,255,255,0.08);
+    --card:       rgba(255,255,255,0.04);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--navy);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background-image:
+      linear-gradient(rgba(0,168,168,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,168,168,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events:none; z-index:0;
+  }
+  body::after {
+    content:'';
+    position:fixed;
+    top:-200px; left:50%;
+    transform:translateX(-50%);
+    width:900px; height:500px;
+    background: radial-gradient(ellipse, rgba(0,107,107,0.3) 0%, transparent 70%);
+    pointer-events:none; z-index:0;
+  }
+
+  .wrapper { position:relative; z-index:1; }
+
+  /* ── LOGIN SCREEN ── */
+  #loginScreen {
+    position:fixed; inset:0;
+    background: linear-gradient(135deg, var(--navy) 0%, #061630 100%);
+    display:flex; align-items:center; justify-content:center;
+    z-index:9999;
+    transition: opacity 0.4s;
+  }
+  #loginScreen.hidden { opacity:0; pointer-events:none; }
+
+  .login-card {
+    background: var(--navy-mid);
+    border: 1px solid rgba(0,168,168,0.2);
+    border-radius: 20px;
+    padding: 48px 40px;
+    width: 420px;
+    max-width: 95vw;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 60px rgba(0,107,107,0.15);
+    text-align: center;
+  }
+
+  .login-logo {
+    margin-bottom: 28px;
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+  }
+
+  .rsgt-logo-svg { width:120px; height:auto; }
+
+  .login-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 28px;
+    letter-spacing: 4px;
+    color: #fff;
+    margin-top: 10px;
+  }
+  .login-sub {
+    font-size:11px;
+    letter-spacing:2px;
+    color: var(--teal-light);
+    text-transform:uppercase;
+    margin-top:4px;
+  }
+
+  .pin-label {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+    margin-top: 30px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .pin-dots {
+    display:flex; gap:14px; justify-content:center;
+    margin-bottom:24px;
+  }
+  .pin-dot {
+    width:16px; height:16px;
+    border-radius:50%;
+    border:2px solid rgba(0,168,168,0.4);
+    background: transparent;
+    transition: all 0.2s;
+  }
+  .pin-dot.filled {
+    background: var(--teal-light);
+    border-color: var(--teal-light);
+    box-shadow: 0 0 12px rgba(0,168,168,0.6);
+  }
+
+  .pin-keypad {
+    display:grid;
+    grid-template-columns: repeat(3,1fr);
+    gap:10px;
+    max-width:240px;
+    margin:0 auto 20px;
+  }
+  .pin-key {
+    height:56px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background: rgba(255,255,255,0.04);
+    color:#fff;
+    font-family:'Bebas Neue',cursive;
+    font-size:22px;
+    cursor:pointer;
+    transition:all 0.15s;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .pin-key:hover { background:rgba(0,168,168,0.15); border-color:rgba(0,168,168,0.4); }
+  .pin-key:active { transform:scale(0.95); }
+  .pin-key.clear { color:var(--warning); font-size:16px; font-family:'DM Sans',sans-serif; }
+  .pin-key.enter { background:var(--teal-mid); color:#fff; border-color:var(--teal-mid); }
+  .pin-key.enter:hover { background:var(--teal-light); box-shadow:0 0 20px rgba(0,168,168,0.4); }
+
+  .login-error {
+    color:var(--danger);
+    font-size:12px;
+    letter-spacing:1px;
+    height:18px;
+    transition:opacity 0.2s;
+  }
+
+  .login-hint {
+    margin-top:20px;
+    font-size:11px;
+    color:var(--text-dim);
+    line-height:1.6;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, var(--navy-mid) 0%, var(--navy) 100%);
+    border-bottom: 1px solid rgba(0,168,168,0.15);
+    padding: 0 32px;
+    display:flex; align-items:center; justify-content:space-between;
+    height: 72px;
+    position:sticky; top:0; z-index:100;
+    backdrop-filter:blur(20px);
+  }
+
+  .logo-group { display:flex; align-items:center; gap:16px; }
+  .rsgt-header-logo { height:48px; width:auto; }
+
+  .logo-divider {
+    width:1px; height:36px;
+    background: rgba(0,168,168,0.25);
+  }
+
+  .logo-text { line-height:1; }
+  .logo-text .brand {
+    font-family:'Bebas Neue',cursive;
+    font-size:20px; letter-spacing:3px; color:#fff;
+  }
+  .logo-text .dept {
+    font-size:10px; letter-spacing:2px;
+    color:var(--teal-light);
+    text-transform:uppercase; margin-top:2px;
+  }
+
+  .header-right { display:flex; align-items:center; gap:20px; }
+
+  .live-badge {
+    display:flex; align-items:center; gap:7px;
+    font-size:11px; font-family:'DM Mono',monospace;
+    color:var(--success); letter-spacing:1px;
+  }
+  .live-dot {
+    width:7px; height:7px; border-radius:50%;
+    background:var(--success);
+    animation:pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100%{opacity:1;transform:scale(1)}
+    50%{opacity:0.4;transform:scale(0.7)}
+  }
+
+  .header-time {
+    font-family:'DM Mono',monospace; font-size:12px; color:var(--text-dim);
+  }
+
+  .btn-logout {
+    padding:7px 14px;
+    border-radius:7px;
+    border:1px solid rgba(232,64,64,0.3);
+    background:rgba(232,64,64,0.1);
+    color:var(--danger);
+    font-size:12px; cursor:pointer;
+    font-family:'DM Sans',sans-serif;
+    transition:all 0.2s;
+  }
+  .btn-logout:hover { background:rgba(232,64,64,0.2); }
+
+  /* ── NAV TABS ── */
+  .nav-tabs {
+    display:flex;
+    gap:2px;
+    background: rgba(0,0,0,0.2);
+    border-bottom:1px solid var(--border);
+    padding:0 32px;
+  }
+  .nav-tab {
+    padding:14px 22px;
+    border:none;
+    background:transparent;
+    color:var(--text-dim);
+    font-family:'DM Sans',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    letter-spacing:0.5px;
+    border-bottom:2px solid transparent;
+    transition:all 0.2s;
+    display:flex; align-items:center; gap:7px;
+    position:relative; top:1px;
+  }
+  .nav-tab:hover { color:var(--text); }
+  .nav-tab.active {
+    color:var(--teal-light);
+    border-bottom-color:var(--teal-light);
+  }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:1px;
+    background:var(--border);
+    border-bottom:1px solid var(--border);
+  }
+  .stat-cell {
+    background:var(--navy);
+    padding:16px 24px;
+    display:flex; align-items:center; gap:14px;
+    transition:background 0.2s;
+  }
+  .stat-cell:hover { background:var(--navy-mid); }
+  .stat-icon {
+    font-size:22px; width:40px; height:40px;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:8px;
+    background:rgba(0,168,168,0.1);
+    flex-shrink:0;
+  }
+  .stat-info .val {
+    font-family:'Bebas Neue',cursive;
+    font-size:26px; letter-spacing:1px; color:#fff; line-height:1;
+  }
+  .stat-info .lbl {
+    font-size:10px; letter-spacing:1.5px;
+    color:var(--text-dim); text-transform:uppercase; margin-top:2px;
+  }
+
+  /* ── MAIN / PAGES ── */
+  .main { padding:28px 32px; }
+  .page { display:none; }
+  .page.active { display:block; }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    display:flex; align-items:center; gap:12px;
+    margin-bottom:24px; flex-wrap:wrap;
+  }
+  .search-wrap { position:relative; flex:1; min-width:220px; }
+  .search-wrap input {
+    width:100%;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:10px 16px 10px 40px;
+    color:var(--text);
+    font-family:'DM Sans',sans-serif;
+    font-size:14px; outline:none;
+    transition:border-color 0.2s,box-shadow 0.2s;
+  }
+  .search-wrap input::placeholder { color:var(--text-dim); }
+  .search-wrap input:focus {
+    border-color:var(--teal-light);
+    box-shadow:0 0 0 3px rgba(0,168,168,0.1);
+  }
+  .search-icon { position:absolute; left:13px; top:50%; transform:translateY(-50%); color:var(--text-dim); }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display:flex; align-items:center; gap:7px;
+    padding:10px 18px; border-radius:8px; border:none;
+    cursor:pointer;
+    font-family:'DM Sans',sans-serif;
+    font-size:13px; font-weight:600; letter-spacing:0.5px;
+    transition:all 0.2s; white-space:nowrap;
+  }
+  .btn-primary { background:var(--teal-mid); color:#fff; }
+  .btn-primary:hover {
+    background:var(--teal-light);
+    box-shadow:0 4px 20px rgba(0,168,168,0.35);
+    transform:translateY(-1px);
+  }
+  .btn-gold { background:var(--accent); color:#0a1628; }
+  .btn-gold:hover { background:#ffb833; box-shadow:0 4px 20px rgba(244,163,26,0.35); transform:translateY(-1px); }
+  .btn-outline {
+    background:transparent; color:var(--text);
+    border:1px solid var(--border);
+  }
+  .btn-outline:hover { background:var(--card); border-color:rgba(255,255,255,0.15); }
+  .btn-danger { background:rgba(232,64,64,0.15); color:var(--danger); border:1px solid rgba(232,64,64,0.25); }
+  .btn-danger:hover { background:rgba(232,64,64,0.25); }
+
+  /* ── TABLE CARD ── */
+  .table-card {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    overflow:hidden;
+  }
+  .table-header-row {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 24px;
+    border-bottom:1px solid var(--border);
+  }
+  .table-title {
+    font-family:'Bebas Neue',cursive;
+    font-size:20px; letter-spacing:2px; color:#fff;
+  }
+  .filter-tabs {
+    display:flex; gap:4px;
+    background:rgba(0,0,0,0.2);
+    border-radius:8px; padding:4px;
+  }
+  .filter-tab {
+    padding:5px 14px; border-radius:5px; border:none;
+    background:transparent; color:var(--text-dim);
+    font-family:'DM Sans',sans-serif; font-size:12px; font-weight:500;
+    cursor:pointer; transition:all 0.2s; letter-spacing:0.5px;
+  }
+  .filter-tab.active { background:var(--teal-mid); color:#fff; font-weight:700; }
+
+  .tbl-scroll { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  thead tr { background:rgba(0,0,0,0.25); }
+  th {
+    padding:12px 14px; text-align:left;
+    font-family:'DM Mono',monospace;
+    font-size:10px; letter-spacing:1.5px;
+    color:var(--text-dim); text-transform:uppercase;
+    border-bottom:1px solid var(--border);
+    white-space:nowrap; font-weight:500;
+  }
+  th.group-header {
+    text-align:center; color:var(--teal-light);
+    border-bottom:2px solid var(--teal-light);
+    font-size:9px; letter-spacing:2px;
+  }
+  td { padding:13px 14px; border-bottom:1px solid var(--border); vertical-align:middle; }
+  tr:last-child td { border-bottom:none; }
+  tbody tr { transition:background 0.15s; }
+  tbody tr:hover { background:rgba(0,168,168,0.04); }
+
+  .employee-name { font-weight:600; color:#fff; font-size:14px; }
+  .employee-id { font-family:'DM Mono',monospace; font-size:11px; color:var(--teal-light); margin-top:2px; }
+
+  .designation-badge {
+    display:inline-block; padding:3px 10px; border-radius:4px;
+    font-size:11px; font-weight:500; letter-spacing:0.5px;
+    background:rgba(0,107,107,0.3); color:#7ecece;
+    border:1px solid rgba(0,107,107,0.5); white-space:nowrap;
+  }
+
+  .ppe-cell { text-align:center; }
+  .ppe-status {
+    display:inline-flex; align-items:center; justify-content:center; gap:5px;
+    padding:4px 10px; border-radius:6px;
+    font-size:11px; font-weight:600; min-width:80px; white-space:nowrap;
+  }
+  .ppe-issued { background:rgba(45,206,137,0.12); color:var(--success); border:1px solid rgba(45,206,137,0.2); }
+  .ppe-pending { background:rgba(251,99,64,0.12); color:var(--warning); border:1px solid rgba(251,99,64,0.2); }
+
+  .actions-cell { display:flex; gap:6px; align-items:center; }
+  .icon-btn {
+    width:30px; height:30px; border-radius:6px;
+    border:1px solid var(--border); background:transparent;
+    color:var(--text-dim);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-size:13px; transition:all 0.2s;
+  }
+  .icon-btn:hover { background:var(--card); color:var(--text); }
+  .icon-btn.edit:hover { border-color:var(--teal-light); color:var(--teal-light); }
+  .icon-btn.del:hover { border-color:var(--danger); color:var(--danger); }
+
+  .export-bar {
+    padding:12px 24px;
+    border-top:1px solid var(--border);
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:11px; color:var(--text-dim);
+    font-family:'DM Mono',monospace;
+  }
+
+  /* Empty state */
+  .empty-state { padding:60px; text-align:center; color:var(--text-dim); }
+  .empty-icon { font-size:40px; margin-bottom:14px; }
+
+  /* ── STORE INVENTORY ── */
+  .inv-controls {
+    display:flex; align-items:center; gap:12px;
+    margin-bottom:24px; flex-wrap:wrap;
+  }
+
+  .inv-stats {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+    margin-bottom:24px;
+  }
+  .inv-stat {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:12px; padding:18px 20px;
+    display:flex; align-items:center; gap:14px;
+  }
+  .inv-stat-icon {
+    font-size:24px; width:44px; height:44px;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:10px; background:rgba(0,168,168,0.1); flex-shrink:0;
+  }
+  .inv-stat-val { font-family:'Bebas Neue',cursive; font-size:28px; color:#fff; line-height:1; }
+  .inv-stat-lbl { font-size:10px; letter-spacing:1.5px; color:var(--text-dim); text-transform:uppercase; margin-top:2px; }
+
+  .inv-table th.group-header { color:var(--accent); border-bottom-color:var(--accent); }
+
+  /* Stock level pill */
+  .stock-pill {
+    display:inline-flex; align-items:center; gap:5px;
+    padding:4px 12px; border-radius:20px;
+    font-size:11px; font-weight:700; white-space:nowrap;
+  }
+  .stock-ok { background:rgba(45,206,137,0.12); color:var(--success); border:1px solid rgba(45,206,137,0.2); }
+  .stock-low { background:rgba(244,163,26,0.12); color:var(--accent); border:1px solid rgba(244,163,26,0.2); }
+  .stock-out { background:rgba(232,64,64,0.12); color:var(--danger); border:1px solid rgba(232,64,64,0.2); }
+
+  .category-badge {
+    display:inline-block; padding:3px 10px; border-radius:4px;
+    font-size:11px; font-weight:500;
+    background:rgba(244,163,26,0.1); color:var(--accent);
+    border:1px solid rgba(244,163,26,0.2); white-space:nowrap;
+  }
+
+  /* Adjust quantity buttons */
+  .qty-ctrl { display:flex; align-items:center; gap:6px; }
+  .qty-btn {
+    width:26px; height:26px; border-radius:5px;
+    border:1px solid var(--border);
+    background:rgba(255,255,255,0.04);
+    color:var(--text); cursor:pointer;
+    font-size:15px; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+    transition:all 0.15s;
+  }
+  .qty-btn:hover { background:rgba(0,168,168,0.15); border-color:var(--teal-light); }
+  .qty-val { font-family:'DM Mono',monospace; font-size:14px; color:#fff; min-width:32px; text-align:center; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position:fixed; inset:0;
+    background:rgba(5,12,25,0.85);
+    backdrop-filter:blur(8px);
+    display:flex; align-items:center; justify-content:center;
+    z-index:500;
+    opacity:0; pointer-events:none;
+    transition:opacity 0.25s;
+  }
+  .modal-overlay.open { opacity:1; pointer-events:all; }
+  .modal {
+    background:var(--navy-mid);
+    border:1px solid rgba(0,168,168,0.15);
+    border-radius:16px;
+    width:90%; max-width:780px; max-height:90vh; overflow-y:auto;
+    transform:translateY(20px) scale(0.97);
+    transition:transform 0.25s;
+    box-shadow:0 40px 80px rgba(0,0,0,0.5);
+  }
+  .modal-overlay.open .modal { transform:translateY(0) scale(1); }
+
+  .modal-head {
+    padding:24px 28px 20px;
+    border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .modal-head h2 {
+    font-family:'Bebas Neue',cursive;
+    font-size:22px; letter-spacing:2px; color:#fff;
+  }
+  .close-btn {
+    width:32px; height:32px; border-radius:8px;
+    border:1px solid var(--border);
+    background:transparent; color:var(--text-dim);
+    cursor:pointer; font-size:18px;
+    display:flex; align-items:center; justify-content:center;
+    transition:all 0.2s;
+  }
+  .close-btn:hover { background:rgba(232,64,64,0.15); color:var(--danger); border-color:rgba(232,64,64,0.3); }
+
+  .modal-body { padding:28px; }
+  .modal-footer {
+    padding:20px 28px;
+    border-top:1px solid var(--border);
+    display:flex; gap:10px; justify-content:flex-end;
+  }
+
+  .form-sections { display:flex; flex-direction:column; gap:28px; }
+  .form-section-title {
+    font-size:10px; letter-spacing:2px; color:var(--teal-light);
+    text-transform:uppercase; font-weight:600;
+    margin-bottom:14px; font-family:'DM Mono',monospace;
+    display:flex; align-items:center; gap:10px;
+  }
+  .form-section-title::after { content:''; flex:1; height:1px; background:rgba(0,168,168,0.15); }
+
+  .form-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(200px,1fr));
+    gap:16px;
+  }
+  .form-group { display:flex; flex-direction:column; gap:7px; }
+  .form-group label { font-size:11px; letter-spacing:1px; color:var(--text-dim); text-transform:uppercase; font-family:'DM Mono',monospace; }
+  .form-group input, .form-group select, .form-group textarea {
+    background:rgba(0,0,0,0.25);
+    border:1px solid var(--border);
+    border-radius:8px; padding:10px 14px;
+    color:var(--text); font-size:14px; font-family:'DM Sans',sans-serif;
+    outline:none; transition:border-color 0.2s,box-shadow 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color:var(--teal-light);
+    box-shadow:0 0 0 3px rgba(0,168,168,0.1);
+  }
+  .form-group select option { background:var(--navy-mid); }
+
+  .ppe-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; }
+  .ppe-toggle-group { display:flex; flex-direction:column; gap:8px; }
+  .ppe-toggle-group label { font-size:11px; letter-spacing:1px; color:var(--text-dim); text-transform:uppercase; font-family:'DM Mono',monospace; }
+
+  .toggle-select { display:flex; gap:4px; }
+  .toggle-select button {
+    flex:1; padding:8px; border-radius:7px;
+    border:1px solid var(--border); background:transparent;
+    color:var(--text-dim); font-size:12px; font-family:'DM Sans',sans-serif;
+    cursor:pointer; transition:all 0.2s;
+  }
+  .toggle-select button.active-issued { background:rgba(45,206,137,0.15); color:var(--success); border-color:rgba(45,206,137,0.3); font-weight:600; }
+  .toggle-select button.active-pending { background:rgba(251,99,64,0.15); color:var(--warning); border-color:rgba(251,99,64,0.3); font-weight:600; }
+
+  /* ── TOAST ── */
+  .toast {
+    position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(30px);
+    background:var(--navy-light);
+    border:1px solid rgba(0,168,168,0.3);
+    color:#fff; padding:12px 24px;
+    border-radius:40px; font-size:13px;
+    box-shadow:0 8px 30px rgba(0,0,0,0.4);
+    opacity:0; transition:all 0.3s; pointer-events:none; z-index:9998;
+    white-space:nowrap;
+  }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+  /* ── RSGT LOGO SVG inline ── */
+  .rsgt-svg-header { height:42px; }
+
+
+  @media (max-width: 768px) {
+
+    /* Header */
+    header {
+      padding: 0 14px;
+      height: auto;
+      min-height: 60px;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+    .logo-divider { display: none; }
+    .logo-text .brand { font-size: 15px; letter-spacing: 2px; }
+    .logo-text .dept { font-size: 9px; }
+    .rsgt-svg-header { height: 32px; }
+    .header-right { gap: 10px; flex-wrap: wrap; }
+    .live-badge { font-size: 10px; }
+    .header-time { font-size: 10px; }
+    .btn-logout { padding: 5px 10px; font-size: 11px; }
+
+    /* Nav tabs - scrollable on mobile */
+    .nav-tabs {
+      padding: 0 8px;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .nav-tabs::-webkit-scrollbar { display: none; }
+    .nav-tab { padding: 12px 14px; font-size: 12px; white-space: nowrap; }
+
+    /* Stats bar - 2 columns on mobile */
+    .stats-bar {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .stat-cell { padding: 12px 14px; gap: 10px; }
+    .stat-icon { font-size: 18px; width: 34px; height: 34px; }
+    .stat-info .val { font-size: 20px; }
+    .stat-info .lbl { font-size: 9px; }
+
+    /* Main padding */
+    .main { padding: 14px 12px; }
+
+    /* Toolbar */
+    .toolbar { gap: 8px; }
+    .toolbar .btn { padding: 9px 12px; font-size: 12px; }
+    .search-wrap { min-width: 100%; }
+
+    /* Table card */
+    .table-header-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 14px 16px;
+    }
+    .filter-tabs { width: 100%; overflow-x: auto; flex-wrap: nowrap; }
+    .filter-tab { font-size: 11px; padding: 5px 10px; white-space: nowrap; }
+
+    /* Table scrollable */
+    .tbl-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { font-size: 12px; min-width: 600px; }
+    th { padding: 10px 10px; font-size: 9px; }
+    td { padding: 10px 10px; }
+
+    /* Inventory stats - 2 cols */
+    .inv-stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .inv-stat { padding: 12px 14px; gap: 10px; }
+    .inv-stat-icon { font-size: 20px; width: 36px; height: 36px; }
+    .inv-stat-val { font-size: 22px; }
+
+    /* Controls row */
+    .inv-controls { gap: 8px; }
+    .inv-controls .btn { padding: 9px 12px; font-size: 12px; }
+
+    /* Modal */
+    .modal {
+      width: 96%;
+      max-height: 95vh;
+      border-radius: 12px;
+    }
+    .modal-head { padding: 16px 18px 14px; }
+    .modal-head h2 { font-size: 18px; }
+    .modal-body { padding: 16px; }
+    .modal-footer { padding: 14px 18px; gap: 8px; }
+    .modal-footer .btn { padding: 9px 14px; font-size: 12px; }
+
+    /* Form grid - 1 column on mobile */
+    .form-grid { grid-template-columns: 1fr; gap: 12px; }
+    .ppe-grid { grid-template-columns: 1fr; gap: 12px; }
+
+    /* Export bar */
+    .export-bar { flex-direction: column; gap: 6px; align-items: flex-start; padding: 10px 16px; }
+
+    /* Login card */
+    .login-card { padding: 30px 22px; }
+    .login-title { font-size: 22px; }
+
+    /* Toast */
+    .toast { font-size: 12px; padding: 10px 18px; max-width: 90vw; white-space: normal; text-align: center; }
+  }
+
+  @media (max-width: 420px) {
+    /* Very small phones */
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    .inv-stats { grid-template-columns: repeat(2, 1fr); }
+    header { padding: 8px 10px; }
+    .main { padding: 10px 8px; }
+    .nav-tab { font-size: 11px; padding: 10px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ LOGIN SCREEN ═══════════════════════════ -->
+<div id="loginScreen" class="hidden" style="display: none;">
+  <div class="login-card">
+    <div class="login-logo">
+      <!-- RSGT Logo SVG (matching poster style) -->
+      <svg class="rsgt-logo-svg" viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="0" width="36" height="36" fill="#1a6e8a" rx="3"></rect>
+        <rect x="40" y="0" width="36" height="36" fill="#0d9488" rx="3"></rect>
+        <rect x="0" y="40" width="36" height="36" fill="#0d9488" rx="3"></rect>
+        <rect x="40" y="40" width="36" height="36" fill="#1a5276" rx="3"></rect>
+        <text x="84" y="26" font-family="&#39;Bebas Neue&#39;,Arial Black,sans-serif" font-size="28" fill="#ffffff" letter-spacing="3">RSGT</text>
+        <text x="84" y="44" font-family="Arial,sans-serif" font-size="10" fill="#7ecece" letter-spacing="1">CHITTAGONG</text>
+        <text x="84" y="58" font-family="Arial,sans-serif" font-size="8" fill="#6a8aa8">A Part of RSGT Bangladesh</text>
+      </svg>
+    </div>
+    <div class="login-title">HSSE SYSTEM</div>
+    <div class="login-sub">PPE &amp; Store Management · Secure Access</div>
+
+    <div class="pin-label">Enter PIN to Continue</div>
+    <div class="pin-dots" id="pinDots">
+      <div class="pin-dot filled" id="dot0"></div>
+      <div class="pin-dot filled" id="dot1"></div>
+      <div class="pin-dot filled" id="dot2"></div>
+      <div class="pin-dot filled" id="dot3"></div>
+    </div>
+
+    <div class="pin-keypad">
+      <button class="pin-key" onclick="pinPress(&#39;1&#39;)">1</button>
+      <button class="pin-key" onclick="pinPress(&#39;2&#39;)">2</button>
+      <button class="pin-key" onclick="pinPress(&#39;3&#39;)">3</button>
+      <button class="pin-key" onclick="pinPress(&#39;4&#39;)">4</button>
+      <button class="pin-key" onclick="pinPress(&#39;5&#39;)">5</button>
+      <button class="pin-key" onclick="pinPress(&#39;6&#39;)">6</button>
+      <button class="pin-key" onclick="pinPress(&#39;7&#39;)">7</button>
+      <button class="pin-key" onclick="pinPress(&#39;8&#39;)">8</button>
+      <button class="pin-key" onclick="pinPress(&#39;9&#39;)">9</button>
+      <button class="pin-key clear" onclick="pinClear()">⌫ Clear</button>
+      <button class="pin-key" onclick="pinPress(&#39;0&#39;)">0</button>
+      <button class="pin-key enter" onclick="pinSubmit()">✓</button>
+    </div>
+    <div class="login-error" id="pinError"></div>
+    <div class="login-hint">Default PIN: <strong style="color:var(--teal-light)">1234</strong><br>Contact your HSSE Admin to change the PIN.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ MAIN APP ═══════════════════════════ -->
+<div class="wrapper" id="appWrapper" style="display: block;">
+
+<header>
+  <div class="logo-group">
+    <!-- RSGT Logo in header -->
+    <svg class="rsgt-svg-header" viewBox="0 0 200 56" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="25" height="25" fill="#1a6e8a" rx="2"></rect>
+      <rect x="28" y="0" width="25" height="25" fill="#0d9488" rx="2"></rect>
+      <rect x="0" y="28" width="25" height="25" fill="#0d9488" rx="2"></rect>
+      <rect x="28" y="28" width="25" height="25" fill="#1a5276" rx="2"></rect>
+      <text x="60" y="21" font-family="&#39;Bebas Neue&#39;,Arial Black,sans-serif" font-size="22" fill="#ffffff" letter-spacing="3">RSGT</text>
+      <text x="60" y="35" font-family="Arial,sans-serif" font-size="9" fill="#7ecece" letter-spacing="1">CHITTAGONG</text>
+      <text x="60" y="48" font-family="Arial,sans-serif" font-size="7.5" fill="#6a8aa8">A Part of RSGT Bangladesh</text>
+    </svg>
+    <div class="logo-divider"></div>
+    <div class="logo-text">
+      <div class="brand">HSSE SYSTEM</div>
+      <div class="dept">PPE &amp; Store Management</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="live-badge"><div class="live-dot"></div>SYSTEM ACTIVE</div>
+    <div class="header-time" id="clock">00:39:28 · 02 May 2026</div>
+    <button class="btn-logout" onclick="logout()">🔒 Lock</button>
+  </div>
+</header>
+
+<!-- NAV TABS -->
+<div class="nav-tabs">
+  <button class="nav-tab active" id="tab-ppe" onclick="switchPage(&#39;ppe&#39;)">🦺 PPE Register</button>
+  <button class="nav-tab" id="tab-store" onclick="switchPage(&#39;store&#39;)">📦 Store Inventory</button>
+  <button class="nav-tab" id="tab-desig" onclick="switchPage(&#39;desig&#39;)">🏢 Designation Manager</button>
+</div>
+
+<!-- ══════ PPE PAGE ══════ -->
+<div class="page active" id="page-ppe">
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat-cell">
+      <div class="stat-icon">👷</div>
+      <div class="stat-info"><div class="val" id="stat-total">5</div><div class="lbl">Total Personnel</div></div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-icon">✅</div>
+      <div class="stat-info"><div class="val" id="stat-compliant">3</div><div class="lbl">Fully Equipped</div></div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-icon">⚠️</div>
+      <div class="stat-info"><div class="val" id="stat-pending">2</div><div class="lbl">PPE Pending</div></div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-icon">🪖</div>
+      <div class="stat-info"><div class="val" id="stat-helmets">4</div><div class="lbl">Helmets Issued</div></div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-icon">🦺</div>
+      <div class="stat-info"><div class="val" id="stat-vests">4</div><div class="lbl">Vests Issued</div></div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="toolbar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search by name, ID, or designation…" oninput="renderTable()">
+      </div>
+      <button class="btn btn-outline" onclick="exportCSV()">⬇ Export CSV</button>
+      <button class="btn btn-primary" onclick="openModal()">＋ Add Personnel</button>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header-row">
+        <div class="table-title">Personnel PPE Register</div>
+        <div class="filter-tabs">
+          <button class="filter-tab active" onclick="setFilter(&#39;all&#39;,this)">All</button>
+          <button class="filter-tab" onclick="setFilter(&#39;compliant&#39;,this)">Compliant</button>
+          <button class="filter-tab" onclick="setFilter(&#39;pending&#39;,this)">Pending</button>
+        </div>
+      </div>
+      <div class="tbl-scroll">
+        <table id="mainTable">
+          <thead>
+            <tr>
+              <th rowspan="2" style="min-width:50px">#</th>
+              <th rowspan="2" style="min-width:160px">Personnel</th>
+              <th rowspan="2" style="min-width:140px">Designation</th>
+              <th colspan="3" class="group-header" style="min-width:240px">🥾 Safety Shoes</th>
+              <th rowspan="2" class="group-header" style="min-width:100px">🪖 Helmet</th>
+              <th rowspan="2" class="group-header" style="min-width:100px">🦺 Safety Vest</th>
+              <th rowspan="2" style="min-width:90px">Actions</th>
+            </tr>
+            <tr>
+              <th style="text-align:center;border-left:1px solid rgba(0,168,168,0.1)">1st Pair</th>
+              <th style="text-align:center">2nd Pair</th>
+              <th style="text-align:center;border-right:1px solid rgba(0,168,168,0.1)">3rd Pair</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"><tr>
+      <td style="color:var(--text-dim);font-family:&#39;DM Mono&#39;,monospace;font-size:11px">01</td>
+      <td><div class="employee-name">Nishat Jarin</div><div class="employee-id">50476</div></td>
+      <td><span class="designation-badge">Admin Assistant</span></td>
+      <td class="ppe-cell" style="border-left:1px solid rgba(0,168,168,0.1)"><span class="ppe-status ppe-issued">✓ Issued · Sz 42</span></td>
+      <td class="ppe-cell"><span class="ppe-status ppe-issued">✓ Issued · Sz 42</span></td>
+      <td class="ppe-cell" style="border-right:1px solid rgba(0,168,168,0.1)"><span class="ppe-status ppe-pending">⏳ Pending</span></td>
+      <td class="ppe-cell"><span class="ppe-status ppe-issued">✓ Issued</span></td>
+      <td class="ppe-cell"><span class="ppe-status ppe-issued">✓ Issued</span></td>
+      <td><div class="actions-cell">
+        <button class="icon-btn edit" onclick="openEdit(0)" title="Edit">✏️</button>
+        <button class="icon-btn del" onclick="deleteRecord(0)" title="Delete">🗑</button>
+      </div></td>
+    </tr><tr>
+      <td style="color:var(--text-dim);font-family:&#39;DM Mono&#39;,monospace;font-size:11px">02</td>
+      <td><div class="employee-name">Ashraf Riad</div><div class="employee-id">50132</div></td>
+      <td><span class="designation-badge">Safety Inspector</span></td>
+      <td class="ppe-cell" style="border-left:1px solid rgba(0,168,168,0.1)"><span class="ppe-status ppe-issued">✓ Issued · Sz 37</span></td>
+      <td class="ppe-cell"><span class="ppe-status ppe-pending">⏳ Pending</span></td>
+      <td class="ppe-cell" style="border-right:1px solid rgba(0,168,168,0.1)"><span class="ppe-status ppe-pending">⏳ Pending</span></td>
+      <td class="ppe-cell"><span class="ppe-status ppe-issued">✓ Issued</span></td>
+      <td class="ppe-cell"><span class="ppe-status ppe-issued">✓ Issued</span></td>
+      <td><div class="actions-cell">
+        <button class="icon-btn edit" onclick="openEdit(1)" title="Edit">✏️</button>
+        <button class="icon-btn del" onclick="deleteRecord(1)" title="Delete">🗑</button>
+      </div></td>
+    </tr><tr>
+      <td style="color:var(--text-dim);font-family:&#39;DM Mono&#39;,monospace;font-size:11px">03</td>
+      <td><div class="employee-name">James Okonkwo</div><div class="employee-id">PORT-0003</div></td>
+      <td><span class="designation-badge">Crane Operator</span></td>
+      <td class="ppe-cell" style="border-left:1px solid rgba(0,168,168,0.1)"><span class="ppe-status ppe-issued">✓ Issued · Sz 44</span></td>
+      <td class="ppe-cell"><span class="ppe-status ppe-issued">✓ Issued · Sz 44</span></td>
+      <td class="ppe-cell" style="border-right:1px solid rgba(0,168,168,0.1)"><span class="ppe-status ppe-issued">✓ Issued · Sz 44</span></td>
+      <td class="ppe-cell"><span class="ppe-status ppe-issued">✓ Issued</span></td>
+      <td class="ppe-cell"><span class="ppe-status ppe-issued">✓ Issued</span></td>
+      <td><div class="actions-cell">
+        <button class="icon-btn edit" onclick="openEdit(2)" title="Edit">✏️</button>
+        <button class="icon-btn del" onclick="deleteRecord(2)" title="Delete">🗑</button>
+      </div></td>
+    </tr><tr>
+      <td style="color:var(--text-dim);font-family:&#39;DM Mono&#39;,monospace;font-size:11px">04</td>
+      <td><div class="employee-name">Ravi Shankar Menon</div><div class="employee-id">PORT-0004</div></td>
+      <td><span class="designation-badge">Stevedore</span></td>
+      <td class="ppe-cell" style="border-left:1px solid rgba(0,168,168,0.1)"><span class="ppe-status ppe-issued">✓ Issued · Sz 40</span></td>
+      <td class="ppe-cell"><span class="ppe-status ppe-pending">⏳ Pending</span></td>
+      <td class="ppe-cell" style="border-right:1px solid rgba(0,168,168,0.1)"><span class="ppe-status ppe-pending">⏳ Pending</span></td>
+      <td class="ppe-cell"><span class="ppe-status ppe-pending">⏳ Pending</span></td>
+      <td class="ppe-cell"><span class="ppe-status ppe-issued">✓ Issued</span></td>
+      <td><div class="actions-cell">
+        <button class="icon-btn edit" onclick="openEdit(3)" title="Edit">✏️</button>
+        <button class="icon-btn del" onclick="deleteRecord(3)" title="Delete">🗑</button>
+      </div></td>
+    </tr><tr>
+      <td style="color:var(--text-dim);font-family:&#39;DM Mono&#39;,monospace;font-size:11px">05</td>
+      <td><div class="employee-name">Aisha Al-Farsi</div><div class="employee-id">PORT-0005</div></td>
+      <td><span class="designation-badge">Port Supervisor</span></td>
+      <td class="ppe-cell" style="border-left:1px solid rgba(0,168,168,0.1)"><span class="ppe-status ppe-issued">✓ Issued · Sz 38</span></td>
+      <td class="ppe-cell"><span class="ppe-status ppe-issued">✓ Issued · Sz 38</span></td>
+      <td class="ppe-cell" style="border-right:1px solid rgba(0,168,168,0.1)"><span class="ppe-status ppe-pending">⏳ Pending</span></td>
+      <td class="ppe-cell"><span class="ppe-status ppe-issued">✓ Issued</span></td>
+      <td class="ppe-cell"><span class="ppe-status ppe-pending">⏳ Pending</span></td>
+      <td><div class="actions-cell">
+        <button class="icon-btn edit" onclick="openEdit(4)" title="Edit">✏️</button>
+        <button class="icon-btn del" onclick="deleteRecord(4)" title="Delete">🗑</button>
+      </div></td>
+    </tr></tbody>
+        </table>
+      </div>
+      <div class="export-bar">
+        <span id="recordCount">5 of 5 records</span>
+        <span id="dateStamp">Last updated: 02/05/2026, 00:32:15</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ STORE INVENTORY PAGE ══════ -->
+<div class="page" id="page-store">
+  <div class="main">
+
+    <!-- Inventory Stats -->
+    <div class="inv-stats">
+      <div class="inv-stat">
+        <div class="inv-stat-icon">📦</div>
+        <div>
+          <div class="inv-stat-val" id="inv-total">5</div>
+          <div class="inv-stat-lbl">Total Items</div>
+        </div>
+      </div>
+      <div class="inv-stat">
+        <div class="inv-stat-icon">✅</div>
+        <div>
+          <div class="inv-stat-val" id="inv-ok">3</div>
+          <div class="inv-stat-lbl">In Stock</div>
+        </div>
+      </div>
+      <div class="inv-stat">
+        <div class="inv-stat-icon">⚠️</div>
+        <div>
+          <div class="inv-stat-val" id="inv-low">1</div>
+          <div class="inv-stat-lbl">Low Stock</div>
+        </div>
+      </div>
+      <div class="inv-stat">
+        <div class="inv-stat-icon">🚫</div>
+        <div>
+          <div class="inv-stat-val" id="inv-out">1</div>
+          <div class="inv-stat-lbl">Out of Stock</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="inv-controls">
+      <div class="search-wrap" style="flex:1;min-width:200px">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="invSearch" placeholder="Search materials…" oninput="renderInventory()">
+      </div>
+      <select id="invCatFilter" onchange="renderInventory()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;outline:none;">
+        <option value="">All Categories</option>
+        <option>PPE</option>
+        <option>Tools &amp; Equipment</option>
+        <option>Consumables</option>
+        <option>Chemicals</option>
+        <option>Spare Parts</option>
+        <option>Other</option>
+      </select>
+      <button class="btn btn-outline" onclick="exportInvCSV()">⬇ Export CSV</button>
+      <button class="btn btn-gold" onclick="openInvModal()">＋ Add Material</button>
+    </div>
+
+    <!-- Inventory Table -->
+    <div class="table-card">
+      <div class="table-header-row">
+        <div class="table-title">Store Material Inventory</div>
+        <div class="filter-tabs">
+          <button class="filter-tab active" onclick="setInvFilter(&#39;all&#39;,this)">All</button>
+          <button class="filter-tab" onclick="setInvFilter(&#39;ok&#39;,this)">In Stock</button>
+          <button class="filter-tab" onclick="setInvFilter(&#39;low&#39;,this)">Low</button>
+          <button class="filter-tab" onclick="setInvFilter(&#39;out&#39;,this)">Out</button>
+        </div>
+      </div>
+      <div class="tbl-scroll">
+        <table class="inv-table">
+          <thead>
+            <tr>
+              <th style="min-width:50px">#</th>
+              <th style="min-width:60px">Code</th>
+              <th style="min-width:180px">Material / Item</th>
+              <th style="min-width:120px">Category</th>
+              <th style="min-width:80px">Unit</th>
+              <th style="min-width:100px" class="group-header">Qty in Stock</th>
+              <th style="min-width:90px" class="group-header">Min. Stock</th>
+              <th style="min-width:110px">Status</th>
+              <th style="min-width:150px">Location / Bin</th>
+              <th style="min-width:90px">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="invTableBody"><tr>
+      <td style="color:var(--text-dim);font-family:&#39;DM Mono&#39;,monospace;font-size:11px">01</td>
+      <td><span style="font-family:&#39;DM Mono&#39;,monospace;font-size:11px;color:var(--teal-light)">PPE-001</span></td>
+      <td><div style="font-weight:600;color:#fff">Safety Helmet (Blue)</div><div style="font-size:11px;color:var(--text-dim);margin-top:2px">Gulf Safety</div></td>
+      <td><span class="category-badge">PPE</span></td>
+      <td style="font-family:&#39;DM Mono&#39;,monospace;font-size:12px;color:var(--text-dim)">Pcs</td>
+      <td class="ppe-cell">
+        <div class="qty-ctrl" style="justify-content:center">
+          <button class="qty-btn" onclick="adjustQty(0,-1)">−</button>
+          <span class="qty-val">45</span>
+          <button class="qty-btn" onclick="adjustQty(0,1)">+</button>
+        </div>
+      </td>
+      <td class="ppe-cell" style="font-family:&#39;DM Mono&#39;,monospace;color:var(--text-dim)">10</td>
+      <td><span class="stock-pill stock-ok">✓ In Stock</span></td>
+      <td style="font-size:12px;color:var(--text-dim)">Shelf A-1</td>
+      <td><div class="actions-cell">
+        <button class="icon-btn edit" onclick="openInvEdit(0)" title="Edit">✏️</button>
+        <button class="icon-btn del" onclick="deleteInvItem(0)" title="Delete">🗑</button>
+      </div></td>
+    </tr><tr>
+      <td style="color:var(--text-dim);font-family:&#39;DM Mono&#39;,monospace;font-size:11px">02</td>
+      <td><span style="font-family:&#39;DM Mono&#39;,monospace;font-size:11px;color:var(--teal-light)">PPE-002</span></td>
+      <td><div style="font-weight:600;color:#fff">Safety Vest (Orange)</div><div style="font-size:11px;color:var(--text-dim);margin-top:2px">Gulf Safety</div></td>
+      <td><span class="category-badge">PPE</span></td>
+      <td style="font-family:&#39;DM Mono&#39;,monospace;font-size:12px;color:var(--text-dim)">Pcs</td>
+      <td class="ppe-cell">
+        <div class="qty-ctrl" style="justify-content:center">
+          <button class="qty-btn" onclick="adjustQty(1,-1)">−</button>
+          <span class="qty-val">38</span>
+          <button class="qty-btn" onclick="adjustQty(1,1)">+</button>
+        </div>
+      </td>
+      <td class="ppe-cell" style="font-family:&#39;DM Mono&#39;,monospace;color:var(--text-dim)">15</td>
+      <td><span class="stock-pill stock-ok">✓ In Stock</span></td>
+      <td style="font-size:12px;color:var(--text-dim)">Shelf A-2</td>
+      <td><div class="actions-cell">
+        <button class="icon-btn edit" onclick="openInvEdit(1)" title="Edit">✏️</button>
+        <button class="icon-btn del" onclick="deleteInvItem(1)" title="Delete">🗑</button>
+      </div></td>
+    </tr><tr>
+      <td style="color:var(--text-dim);font-family:&#39;DM Mono&#39;,monospace;font-size:11px">03</td>
+      <td><span style="font-family:&#39;DM Mono&#39;,monospace;font-size:11px;color:var(--teal-light)">PPE-003</span></td>
+      <td><div style="font-weight:600;color:#fff">Safety Shoes (Pair)</div><div style="font-size:11px;color:var(--text-dim);margin-top:2px">Atlas Safety</div></td>
+      <td><span class="category-badge">PPE</span></td>
+      <td style="font-family:&#39;DM Mono&#39;,monospace;font-size:12px;color:var(--text-dim)">Pairs</td>
+      <td class="ppe-cell">
+        <div class="qty-ctrl" style="justify-content:center">
+          <button class="qty-btn" onclick="adjustQty(2,-1)">−</button>
+          <span class="qty-val">8</span>
+          <button class="qty-btn" onclick="adjustQty(2,1)">+</button>
+        </div>
+      </td>
+      <td class="ppe-cell" style="font-family:&#39;DM Mono&#39;,monospace;color:var(--text-dim)">10</td>
+      <td><span class="stock-pill stock-low">⚠ Low Stock</span></td>
+      <td style="font-size:12px;color:var(--text-dim)">Shelf A-3</td>
+      <td><div class="actions-cell">
+        <button class="icon-btn edit" onclick="openInvEdit(2)" title="Edit">✏️</button>
+        <button class="icon-btn del" onclick="deleteInvItem(2)" title="Delete">🗑</button>
+      </div></td>
+    </tr><tr>
+      <td style="color:var(--text-dim);font-family:&#39;DM Mono&#39;,monospace;font-size:11px">04</td>
+      <td><span style="font-family:&#39;DM Mono&#39;,monospace;font-size:11px;color:var(--teal-light)">PPE-004</span></td>
+      <td><div style="font-weight:600;color:#fff">Safety Gloves (Heavy Duty)</div><div style="font-size:11px;color:var(--text-dim);margin-top:2px">Gulf Safety</div></td>
+      <td><span class="category-badge">PPE</span></td>
+      <td style="font-family:&#39;DM Mono&#39;,monospace;font-size:12px;color:var(--text-dim)">Pairs</td>
+      <td class="ppe-cell">
+        <div class="qty-ctrl" style="justify-content:center">
+          <button class="qty-btn" onclick="adjustQty(3,-1)">−</button>
+          <span class="qty-val">0</span>
+          <button class="qty-btn" onclick="adjustQty(3,1)">+</button>
+        </div>
+      </td>
+      <td class="ppe-cell" style="font-family:&#39;DM Mono&#39;,monospace;color:var(--text-dim)">20</td>
+      <td><span class="stock-pill stock-out">✗ Out of Stock</span></td>
+      <td style="font-size:12px;color:var(--text-dim)">Shelf A-4</td>
+      <td><div class="actions-cell">
+        <button class="icon-btn edit" onclick="openInvEdit(3)" title="Edit">✏️</button>
+        <button class="icon-btn del" onclick="deleteInvItem(3)" title="Delete">🗑</button>
+      </div></td>
+    </tr><tr>
+      <td style="color:var(--text-dim);font-family:&#39;DM Mono&#39;,monospace;font-size:11px">05</td>
+      <td><span style="font-family:&#39;DM Mono&#39;,monospace;font-size:11px;color:var(--teal-light)">TOL-001</span></td>
+      <td><div style="font-weight:600;color:#fff">Fire Extinguisher (CO2)</div><div style="font-size:11px;color:var(--text-dim);margin-top:2px">Al-Falah Safety</div></td>
+      <td><span class="category-badge">Tools &amp; Equipment</span></td>
+      <td style="font-family:&#39;DM Mono&#39;,monospace;font-size:12px;color:var(--text-dim)">Pcs</td>
+      <td class="ppe-cell">
+        <div class="qty-ctrl" style="justify-content:center">
+          <button class="qty-btn" onclick="adjustQty(4,-1)">−</button>
+          <span class="qty-val">6</span>
+          <button class="qty-btn" onclick="adjustQty(4,1)">+</button>
+        </div>
+      </td>
+      <td class="ppe-cell" style="font-family:&#39;DM Mono&#39;,monospace;color:var(--text-dim)">4</td>
+      <td><span class="stock-pill stock-ok">✓ In Stock</span></td>
+      <td style="font-size:12px;color:var(--text-dim)">Store Room 1</td>
+      <td><div class="actions-cell">
+        <button class="icon-btn edit" onclick="openInvEdit(4)" title="Edit">✏️</button>
+        <button class="icon-btn del" onclick="deleteInvItem(4)" title="Delete">🗑</button>
+      </div></td>
+    </tr></tbody>
+        </table>
+      </div>
+      <div class="export-bar">
+        <span id="invCount">5 of 5 items</span>
+        <span id="invDateStamp">Last updated: 02/05/2026, 00:32:15</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ DESIGNATION MANAGER PAGE ══════ -->
+<div class="page" id="page-desig">
+  <div class="main">
+
+    <!-- Dept Stats -->
+    <div class="inv-stats" style="grid-template-columns:repeat(3,1fr)">
+      <div class="inv-stat">
+        <div class="inv-stat-icon">🏢</div>
+        <div>
+          <div class="inv-stat-val" id="desig-dept-count">0</div>
+          <div class="inv-stat-lbl">Departments</div>
+        </div>
+      </div>
+      <div class="inv-stat">
+        <div class="inv-stat-icon">🪪</div>
+        <div>
+          <div class="inv-stat-val" id="desig-total-count">0</div>
+          <div class="inv-stat-lbl">Total Designations</div>
+        </div>
+      </div>
+      <div class="inv-stat">
+        <div class="inv-stat-icon">👷</div>
+        <div>
+          <div class="inv-stat-val" id="desig-used-count">0</div>
+          <div class="inv-stat-lbl">In Use (PPE Records)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="inv-controls">
+      <div class="search-wrap" style="flex:1;min-width:200px">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="desigSearch" placeholder="Search designations or departments…" oninput="renderDesig()">
+      </div>
+      <select id="desigDeptFilter" onchange="renderDesig()" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;outline:none;min-width:180px"><option value="">All Departments</option><option value="Administration">Administration</option><option value="Engineering">Engineering</option><option value="Finance">Finance</option><option value="HSSE">HSSE</option><option value="Human Resources">Human Resources</option><option value="IT">IT</option><option value="Logistics">Logistics</option><option value="Management">Management</option><option value="Marine">Marine</option><option value="Operations">Operations</option><option value="Security">Security</option></select>
+      <button class="btn btn-outline" onclick="exportDesigCSV()">⬇ Export CSV</button>
+      <button class="btn btn-primary" onclick="openDesigModal()">＋ Add Designation</button>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header-row">
+        <div class="table-title">Designation &amp; Position Register</div>
+        <div style="font-size:11px;color:var(--text-dim);font-family:&#39;DM Mono&#39;,monospace" id="desigCount">0 designations</div>
+      </div>
+      <div class="tbl-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th style="min-width:50px">#</th>
+              <th style="min-width:180px">Designation / Position</th>
+              <th style="min-width:160px">Department</th>
+              <th style="min-width:120px">Grade / Level</th>
+              <th style="min-width:100px">Category</th>
+              <th style="min-width:80px">In Use</th>
+              <th style="min-width:90px">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="desigTableBody"></tbody>
+        </table>
+      </div>
+      <div class="export-bar">
+        <span id="desigFooterCount">0 designations</span>
+        <span style="font-size:11px;color:var(--text-dim)">Manage all RSGT position titles here. Changes apply immediately to the PPE Register dropdown.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /wrapper -->
+
+<!-- ══════ PPE MODAL ══════ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="modalTitle">Edit Personnel</h2>
+      <button class="close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-sections">
+        <div>
+          <div class="form-section-title">Personal Information</div>
+          <div class="form-grid">
+            <div class="form-group"><label>Full Name</label><input type="text" id="f_name" placeholder="e.g. Ahmad Al-Rashidi"></div>
+            <div class="form-group"><label>Employee ID</label><input type="text" id="f_id" placeholder="e.g. PORT-0042"></div>
+            <div class="form-group">
+              <label>Designation / Role</label>
+              <div style="display:flex;gap:8px;align-items:center">
+                <select id="f_designation" onchange="handleDesigSelect(this)" style="flex:1"><option value="">— Select —</option><option value="__add_new__" style="color: rgb(0, 168, 168); font-weight: 700;">＋ Add New Designation…</option><optgroup label="── Administration ──"><option value="Administrative Manager">Administrative Manager</option><option value="Administrative Officer">Administrative Officer</option><option value="Executive Assistant">Executive Assistant</option><option value="Office Assistant">Office Assistant</option><option value="Receptionist">Receptionist</option></optgroup><optgroup label="── Engineering ──"><option value="Chief Engineer">Chief Engineer</option><option value="Electrical Engineer">Electrical Engineer</option><option value="Electrician">Electrician</option><option value="Engineering Manager">Engineering Manager</option><option value="Maintenance Supervisor">Maintenance Supervisor</option><option value="Mechanic">Mechanic</option><option value="Mechanical Engineer">Mechanical Engineer</option><option value="Technician">Technician</option></optgroup><optgroup label="── Finance ──"><option value="Accountant">Accountant</option><option value="Finance Manager">Finance Manager</option><option value="Finance Officer">Finance Officer</option><option value="Senior Accountant">Senior Accountant</option></optgroup><optgroup label="── HSSE ──"><option value="Admin Assistant">Admin Assistant</option><option value="Environment Officer">Environment Officer</option><option value="Fire &amp; Safety Officer">Fire &amp; Safety Officer</option><option value="HSSE Manager">HSSE Manager</option><option value="HSSE Officer">HSSE Officer</option><option value="HSSE Supervisor">HSSE Supervisor</option><option value="Safety Inspector">Safety Inspector</option></optgroup><optgroup label="── Human Resources ──"><option value="HR Manager">HR Manager</option><option value="HR Officer">HR Officer</option><option value="Payroll Officer">Payroll Officer</option><option value="Training Officer">Training Officer</option></optgroup><optgroup label="── IT ──"><option value="IT Manager">IT Manager</option><option value="IT Officer">IT Officer</option><option value="Network Administrator">Network Administrator</option><option value="Systems Analyst">Systems Analyst</option></optgroup><optgroup label="── Logistics ──"><option value="Customs Liaison Officer">Customs Liaison Officer</option><option value="Import / Export Officer">Import / Export Officer</option><option value="Logistics Coordinator">Logistics Coordinator</option><option value="Logistics Manager">Logistics Manager</option></optgroup><optgroup label="── Management ──"><option value="Assistant Manager">Assistant Manager</option><option value="Deputy General Manager">Deputy General Manager</option><option value="General Manager">General Manager</option><option value="Manager">Manager</option><option value="Senior Manager">Senior Manager</option></optgroup><optgroup label="── Marine ──"><option value="Harbour Master">Harbour Master</option><option value="Marine Manager">Marine Manager</option><option value="Marine Pilot">Marine Pilot</option><option value="Mooring Master">Mooring Master</option><option value="Tug Master">Tug Master</option><option value="Vessel Traffic Officer">Vessel Traffic Officer</option></optgroup><optgroup label="── Operations ──"><option value="Crane Operator">Crane Operator</option><option value="Forklift Operator">Forklift Operator</option><option value="Labourer">Labourer</option><option value="Operations Manager">Operations Manager</option><option value="Operations Officer">Operations Officer</option><option value="Operations Supervisor">Operations Supervisor</option><option value="Port Supervisor">Port Supervisor</option><option value="RTG Operator">RTG Operator</option><option value="Shift Supervisor">Shift Supervisor</option><option value="Stevedore">Stevedore</option><option value="Yard Planner">Yard Planner</option></optgroup><optgroup label="── Security ──"><option value="Access Control Officer">Access Control Officer</option><option value="Security Guard">Security Guard</option><option value="Security Manager">Security Manager</option><option value="Security Supervisor">Security Supervisor</option></optgroup></select>
+                <button type="button" onclick="openQuickAddDesig()" title="Add new designation" style="flex-shrink:0;height:38px;padding:0 12px;border-radius:8px;border:1px solid rgba(0,168,168,0.4);background:rgba(0,168,168,0.1);color:var(--teal-light);font-size:18px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center" onmouseover="this.style.background=&#39;rgba(0,168,168,0.22)&#39;" onmouseout="this.style.background=&#39;rgba(0,168,168,0.1)&#39;">＋</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="form-section-title">🥾 Safety Shoes</div>
+          <div class="ppe-grid">
+            <div class="ppe-toggle-group">
+              <label>1st Pair</label>
+              <div style="display:flex;gap:8px;align-items:center">
+                <div class="toggle-select" id="shoe1-toggle">
+                  <button onclick="setToggle(&#39;shoe1&#39;,true,this)" class="active-issued">Issued</button>
+                  <button onclick="setToggle(&#39;shoe1&#39;,false,this)">Pending</button>
+                </div>
+                <input type="text" id="f_shoe1_size" placeholder="Size" style="width:70px;border-radius:8px;border:1px solid var(--border);background:rgba(0,0,0,0.25);padding:9px 8px;color:var(--text);font-size:13px;outline:none;">
+              </div>
+            </div>
+            <div class="ppe-toggle-group">
+              <label>2nd Pair</label>
+              <div style="display:flex;gap:8px;align-items:center">
+                <div class="toggle-select" id="shoe2-toggle">
+                  <button onclick="setToggle(&#39;shoe2&#39;,true,this)">Issued</button>
+                  <button onclick="setToggle(&#39;shoe2&#39;,false,this)" class="active-pending">Pending</button>
+                </div>
+                <input type="text" id="f_shoe2_size" placeholder="Size" style="width:70px;border-radius:8px;border:1px solid var(--border);background:rgba(0,0,0,0.25);padding:9px 8px;color:var(--text);font-size:13px;outline:none;">
+              </div>
+            </div>
+            <div class="ppe-toggle-group">
+              <label>3rd Pair</label>
+              <div style="display:flex;gap:8px;align-items:center">
+                <div class="toggle-select" id="shoe3-toggle">
+                  <button onclick="setToggle(&#39;shoe3&#39;,true,this)">Issued</button>
+                  <button onclick="setToggle(&#39;shoe3&#39;,false,this)" class="active-pending">Pending</button>
+                </div>
+                <input type="text" id="f_shoe3_size" placeholder="Size" style="width:70px;border-radius:8px;border:1px solid var(--border);background:rgba(0,0,0,0.25);padding:9px 8px;color:var(--text);font-size:13px;outline:none;">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="form-section-title">Head &amp; Body Protection</div>
+          <div class="ppe-grid">
+            <div class="ppe-toggle-group">
+              <label>🪖 Helmet</label>
+              <div class="toggle-select" id="helmet-toggle">
+                <button onclick="setToggle(&#39;helmet&#39;,true,this)" class="active-issued">Issued</button>
+                <button onclick="setToggle(&#39;helmet&#39;,false,this)">Pending</button>
+              </div>
+            </div>
+            <div class="ppe-toggle-group">
+              <label>🦺 Safety Vest</label>
+              <div class="toggle-select" id="vest-toggle">
+                <button onclick="setToggle(&#39;vest&#39;,true,this)" class="active-issued">Issued</button>
+                <button onclick="setToggle(&#39;vest&#39;,false,this)">Pending</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveRecord()">💾 Save Record</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ INVENTORY MODAL ══════ -->
+<div class="modal-overlay" id="invModalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="invModalTitle">Add Material</h2>
+      <button class="close-btn" onclick="closeInvModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-sections">
+        <div>
+          <div class="form-section-title">Material Information</div>
+          <div class="form-grid">
+            <div class="form-group"><label>Item Code</label><input type="text" id="iv_code" placeholder="e.g. PPE-001"></div>
+            <div class="form-group"><label>Material / Item Name</label><input type="text" id="iv_name" placeholder="e.g. Safety Helmet (Blue)"></div>
+            <div class="form-group">
+              <label>Category</label>
+              <select id="iv_category">
+                <option value="">— Select —</option>
+                <option>PPE</option><option>Tools &amp; Equipment</option>
+                <option>Consumables</option><option>Chemicals</option>
+                <option>Spare Parts</option><option>Other</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Unit of Measure</label>
+              <select id="iv_unit">
+                <option>Pcs</option><option>Pairs</option><option>Box</option>
+                <option>Kg</option><option>Litre</option><option>Roll</option>
+                <option>Set</option><option>Carton</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Quantity in Stock</label><input type="number" id="iv_qty" placeholder="0" min="0"></div>
+            <div class="form-group"><label>Minimum Stock Level</label><input type="number" id="iv_min" placeholder="5" min="0"></div>
+            <div class="form-group"><label>Storage Location / Bin</label><input type="text" id="iv_location" placeholder="e.g. Shelf A-3"></div>
+            <div class="form-group"><label>Supplier / Remarks</label><input type="text" id="iv_supplier" placeholder="Optional"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeInvModal()">Cancel</button>
+      <button class="btn btn-gold" onclick="saveInvRecord()">💾 Save Item</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ DESIGNATION MODAL ══════ -->
+<div class="modal-overlay" id="desigModalOverlay">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-head">
+      <h2 id="desigModalTitle">Add Designation</h2>
+      <button class="close-btn" onclick="closeDesigModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-sections">
+        <div>
+          <div class="form-section-title">Position Details</div>
+          <div class="form-grid">
+            <div class="form-group" style="grid-column:1/-1">
+              <label>Designation / Position Title</label>
+              <input type="text" id="dg_title" placeholder="e.g. Assistant Manager – Operations">
+            </div>
+            <div class="form-group">
+              <label>Department</label>
+              <input type="text" id="dg_dept" placeholder="e.g. Operations" list="deptList">
+              <datalist id="deptList"><option value="Administration"></option><option value="Engineering"></option><option value="Finance"></option><option value="HSSE"></option><option value="Human Resources"></option><option value="IT"></option><option value="Logistics"></option><option value="Management"></option><option value="Marine"></option><option value="Operations"></option><option value="Security"></option></datalist>
+            </div>
+            <div class="form-group">
+              <label>Grade / Level</label>
+              <select id="dg_grade">
+                <option value="">— Select —</option>
+                <option>C-Suite / Director</option>
+                <option>Senior Manager</option>
+                <option>Manager</option>
+                <option>Assistant Manager</option>
+                <option>Supervisor</option>
+                <option>Senior Officer</option>
+                <option>Officer</option>
+                <option>Technician / Specialist</option>
+                <option>Operator</option>
+                <option>General Worker</option>
+                <option>Trainee / Intern</option>
+                <option>Contract / Casual</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Staff Category</label>
+              <select id="dg_category">
+                <option value="">— Select —</option>
+                <option>Management</option>
+                <option>Operations</option>
+                <option>Technical</option>
+                <option>Administrative</option>
+                <option>Security</option>
+                <option>HSSE</option>
+                <option>Marine</option>
+                <option>Logistics</option>
+                <option>Finance</option>
+                <option>IT</option>
+                <option>HR</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-group" style="grid-column:1/-1">
+              <label>Notes / Remarks</label>
+              <input type="text" id="dg_notes" placeholder="Optional">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeDesigModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveDesig()">💾 Save Designation</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ QUICK-ADD DESIGNATION MODAL ══════ -->
+<div class="modal-overlay" id="quickDesigOverlay" style="z-index:600">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-head">
+      <h2>➕ Quick Add Designation</h2>
+      <button class="close-btn" onclick="closeQuickAddDesig()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:18px;line-height:1.6">
+        Add a new position title right here. It will instantly appear in the designation dropdown and in the <strong style="color:var(--teal-light)">Designation Manager</strong> tab.
+      </p>
+      <div class="form-grid">
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Designation / Position Title</label>
+          <input type="text" id="qdg_title" placeholder="e.g. Assistant Manager – Operations" onkeydown="if(event.key===&#39;Enter&#39;)saveQuickDesig()">
+        </div>
+        <div class="form-group">
+          <label>Department</label>
+          <input type="text" id="qdg_dept" placeholder="e.g. Operations" list="deptList">
+        </div>
+        <div class="form-group">
+          <label>Grade / Level</label>
+          <select id="qdg_grade">
+            <option value="">— Optional —</option>
+            <option>C-Suite / Director</option>
+            <option>Senior Manager</option>
+            <option>Manager</option>
+            <option>Assistant Manager</option>
+            <option>Supervisor</option>
+            <option>Senior Officer</option>
+            <option>Officer</option>
+            <option>Technician / Specialist</option>
+            <option>Operator</option>
+            <option>General Worker</option>
+            <option>Trainee / Intern</option>
+            <option>Contract / Casual</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeQuickAddDesig()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveQuickDesig()">✅ Add &amp; Select</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✅ Record updated!</div>
+
+<script>
+// ═══════════════════════════════════════════
+// PIN ACCESS CONTROL
+// ═══════════════════════════════════════════
+const CORRECT_PIN = '1234'; // Change this to your preferred PIN
+let pinBuffer = '';
+
+function pinPress(d) {
+  if (pinBuffer.length >= 4) return;
+  pinBuffer += d;
+  updateDots();
+  if (pinBuffer.length === 4) setTimeout(pinSubmit, 200);
+}
+
+function pinClear() {
+  pinBuffer = pinBuffer.slice(0,-1);
+  updateDots();
+}
+
+function updateDots() {
+  for (let i=0;i<4;i++) {
+    document.getElementById('dot'+i).classList.toggle('filled', i < pinBuffer.length);
+  }
+}
+
+function pinSubmit() {
+  if (pinBuffer === CORRECT_PIN) {
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('appWrapper').style.display = 'block';
+    setTimeout(() => document.getElementById('loginScreen').style.display='none', 400);
+    showToast('🔓 Access granted. Welcome!');
+  } else {
+    document.getElementById('pinError').textContent = '✗ Incorrect PIN. Please try again.';
+    pinBuffer = '';
+    updateDots();
+    setTimeout(() => document.getElementById('pinError').textContent='', 2000);
+  }
+}
+
+function logout() {
+  if (!confirm('Lock the system?')) return;
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('loginScreen').style.opacity='1';
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('appWrapper').style.display='none';
+  pinBuffer=''; updateDots();
+}
+
+// Allow keyboard input on login
+document.addEventListener('keydown', function(e) {
+  if (document.getElementById('appWrapper').style.display==='block') return;
+  if (e.key >= '0' && e.key <= '9') pinPress(e.key);
+  else if (e.key === 'Backspace') pinClear();
+  else if (e.key === 'Enter') pinSubmit();
+});
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+function switchPage(p) {
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.getElementById('tab-'+p).classList.add('active');
+  if (p === 'desig') renderDesig();
+}
+
+// ═══════════════════════════════════════════
+// DESIGNATION DATA
+// ═══════════════════════════════════════════
+const DEFAULT_DESIGNATIONS = [
+  // ── Management ──────────────────────────
+  { title:'General Manager',               dept:'Management',        grade:'C-Suite / Director',  category:'Management', notes:'' },
+  { title:'Deputy General Manager',        dept:'Management',        grade:'Senior Manager',       category:'Management', notes:'' },
+  { title:'Senior Manager',                dept:'Management',        grade:'Senior Manager',       category:'Management', notes:'' },
+  { title:'Manager',                       dept:'Management',        grade:'Manager',              category:'Management', notes:'' },
+  { title:'Assistant Manager',             dept:'Management',        grade:'Assistant Manager',    category:'Management', notes:'' },
+  // ── Operations ──────────────────────────
+  { title:'Operations Manager',            dept:'Operations',        grade:'Manager',              category:'Operations', notes:'' },
+  { title:'Operations Supervisor',         dept:'Operations',        grade:'Supervisor',           category:'Operations', notes:'' },
+  { title:'Operations Officer',            dept:'Operations',        grade:'Officer',              category:'Operations', notes:'' },
+  { title:'Port Supervisor',               dept:'Operations',        grade:'Supervisor',           category:'Operations', notes:'' },
+  { title:'Shift Supervisor',              dept:'Operations',        grade:'Supervisor',           category:'Operations', notes:'' },
+  { title:'Yard Planner',                  dept:'Operations',        grade:'Officer',              category:'Operations', notes:'' },
+  { title:'Crane Operator',                dept:'Operations',        grade:'Operator',             category:'Operations', notes:'' },
+  { title:'Forklift Operator',             dept:'Operations',        grade:'Operator',             category:'Operations', notes:'' },
+  { title:'RTG Operator',                  dept:'Operations',        grade:'Operator',             category:'Operations', notes:'' },
+  { title:'Stevedore',                     dept:'Operations',        grade:'General Worker',       category:'Operations', notes:'' },
+  { title:'Labourer',                      dept:'Operations',        grade:'General Worker',       category:'Operations', notes:'' },
+  // ── HSSE ────────────────────────────────
+  { title:'HSSE Manager',                  dept:'HSSE',              grade:'Manager',              category:'HSSE',       notes:'' },
+  { title:'HSSE Supervisor',               dept:'HSSE',              grade:'Supervisor',           category:'HSSE',       notes:'' },
+  { title:'HSSE Officer',                  dept:'HSSE',              grade:'Officer',              category:'HSSE',       notes:'' },
+  { title:'Safety Inspector',              dept:'HSSE',              grade:'Senior Officer',       category:'HSSE',       notes:'' },
+  { title:'Environment Officer',           dept:'HSSE',              grade:'Officer',              category:'HSSE',       notes:'' },
+  { title:'Fire & Safety Officer',         dept:'HSSE',              grade:'Officer',              category:'HSSE',       notes:'' },
+  // ── Engineering / Technical ─────────────
+  { title:'Chief Engineer',                dept:'Engineering',       grade:'Senior Manager',       category:'Technical',  notes:'' },
+  { title:'Engineering Manager',           dept:'Engineering',       grade:'Manager',              category:'Technical',  notes:'' },
+  { title:'Mechanical Engineer',           dept:'Engineering',       grade:'Officer',              category:'Technical',  notes:'' },
+  { title:'Electrical Engineer',           dept:'Engineering',       grade:'Officer',              category:'Technical',  notes:'' },
+  { title:'Maintenance Supervisor',        dept:'Engineering',       grade:'Supervisor',           category:'Technical',  notes:'' },
+  { title:'Technician',                    dept:'Engineering',       grade:'Technician / Specialist',category:'Technical',notes:'' },
+  { title:'Electrician',                   dept:'Engineering',       grade:'Technician / Specialist',category:'Technical',notes:'' },
+  { title:'Mechanic',                      dept:'Engineering',       grade:'Technician / Specialist',category:'Technical',notes:'' },
+  // ── Marine ──────────────────────────────
+  { title:'Marine Manager',                dept:'Marine',            grade:'Manager',              category:'Marine',     notes:'' },
+  { title:'Marine Pilot',                  dept:'Marine',            grade:'Senior Officer',       category:'Marine',     notes:'' },
+  { title:'Harbour Master',                dept:'Marine',            grade:'C-Suite / Director',   category:'Marine',     notes:'' },
+  { title:'Vessel Traffic Officer',        dept:'Marine',            grade:'Officer',              category:'Marine',     notes:'' },
+  { title:'Tug Master',                    dept:'Marine',            grade:'Senior Officer',       category:'Marine',     notes:'' },
+  { title:'Mooring Master',                dept:'Marine',            grade:'Senior Officer',       category:'Marine',     notes:'' },
+  // ── Logistics ───────────────────────────
+  { title:'Logistics Manager',             dept:'Logistics',         grade:'Manager',              category:'Logistics',  notes:'' },
+  { title:'Logistics Coordinator',         dept:'Logistics',         grade:'Officer',              category:'Logistics',  notes:'' },
+  { title:'Import / Export Officer',       dept:'Logistics',         grade:'Officer',              category:'Logistics',  notes:'' },
+  { title:'Customs Liaison Officer',       dept:'Logistics',         grade:'Officer',              category:'Logistics',  notes:'' },
+  // ── Security ────────────────────────────
+  { title:'Security Manager',              dept:'Security',          grade:'Manager',              category:'Security',   notes:'' },
+  { title:'Security Supervisor',           dept:'Security',          grade:'Supervisor',           category:'Security',   notes:'' },
+  { title:'Security Guard',                dept:'Security',          grade:'General Worker',       category:'Security',   notes:'' },
+  { title:'Access Control Officer',        dept:'Security',          grade:'Officer',              category:'Security',   notes:'' },
+  // ── Finance ─────────────────────────────
+  { title:'Finance Manager',               dept:'Finance',           grade:'Manager',              category:'Finance',    notes:'' },
+  { title:'Senior Accountant',             dept:'Finance',           grade:'Senior Officer',       category:'Finance',    notes:'' },
+  { title:'Accountant',                    dept:'Finance',           grade:'Officer',              category:'Finance',    notes:'' },
+  { title:'Finance Officer',               dept:'Finance',           grade:'Officer',              category:'Finance',    notes:'' },
+  // ── HR ──────────────────────────────────
+  { title:'HR Manager',                    dept:'Human Resources',   grade:'Manager',              category:'HR',         notes:'' },
+  { title:'HR Officer',                    dept:'Human Resources',   grade:'Officer',              category:'HR',         notes:'' },
+  { title:'Training Officer',              dept:'Human Resources',   grade:'Officer',              category:'HR',         notes:'' },
+  { title:'Payroll Officer',               dept:'Human Resources',   grade:'Officer',              category:'HR',         notes:'' },
+  // ── IT ──────────────────────────────────
+  { title:'IT Manager',                    dept:'IT',                grade:'Manager',              category:'IT',         notes:'' },
+  { title:'IT Officer',                    dept:'IT',                grade:'Officer',              category:'IT',         notes:'' },
+  { title:'Network Administrator',         dept:'IT',                grade:'Technician / Specialist',category:'IT',       notes:'' },
+  { title:'Systems Analyst',               dept:'IT',                grade:'Senior Officer',       category:'IT',         notes:'' },
+  // ── Admin ───────────────────────────────
+  { title:'Administrative Manager',        dept:'Administration',    grade:'Manager',              category:'Administrative',notes:'' },
+  { title:'Administrative Officer',        dept:'Administration',    grade:'Officer',              category:'Administrative',notes:'' },
+  { title:'Executive Assistant',           dept:'Administration',    grade:'Senior Officer',       category:'Administrative',notes:'' },
+  { title:'Receptionist',                  dept:'Administration',    grade:'General Worker',       category:'Administrative',notes:'' },
+  { title:'Office Assistant',              dept:'Administration',    grade:'General Worker',       category:'Administrative',notes:'' },
+];
+
+let designations = JSON.parse(localStorage.getItem('hsse_designations') || 'null');
+if (!designations) { designations = DEFAULT_DESIGNATIONS; saveDesignations(); }
+let desigEditIndex = -1;
+
+function saveDesignations() { localStorage.setItem('hsse_designations', JSON.stringify(designations)); }
+
+// Rebuild the designation <select> in PPE modal from designations data
+function rebuildDesigSelect() {
+  const sel = document.getElementById('f_designation');
+  const cur = sel.value;
+  const depts = [...new Set(designations.map(d=>d.dept))].sort();
+  sel.innerHTML = '<option value="">— Select —</option>';
+  // "＋ Add New Designation..." as first special option
+  const addOpt = document.createElement('option');
+  addOpt.value = '__add_new__';
+  addOpt.textContent = '＋ Add New Designation…';
+  addOpt.style.color = '#00a8a8';
+  addOpt.style.fontWeight = '700';
+  sel.appendChild(addOpt);
+
+  depts.forEach(dept => {
+    const grp = document.createElement('optgroup');
+    grp.label = '── ' + dept + ' ──';
+    designations.filter(d=>d.dept===dept).sort((a,b)=>a.title.localeCompare(b.title)).forEach(d=>{
+      const opt = document.createElement('option');
+      opt.value = d.title; opt.textContent = d.title;
+      grp.appendChild(opt);
+    });
+    sel.appendChild(grp);
+  });
+  if (cur && cur !== '__add_new__') sel.value = cur;
+
+  // Rebuild dept filter on desig page
+  const df = document.getElementById('desigDeptFilter');
+  const curDf = df.value;
+  df.innerHTML = '<option value="">All Departments</option>';
+  depts.forEach(d=>{ const o=document.createElement('option'); o.value=o.textContent=d; df.appendChild(o); });
+  if (curDf) df.value = curDf;
+
+  // Rebuild datalist for dept input in modal
+  const dl = document.getElementById('deptList');
+  dl.innerHTML = '';
+  depts.forEach(d=>{ const o=document.createElement('option'); o.value=d; dl.appendChild(o); });
+}
+
+function handleDesigSelect(sel) {
+  if (sel.value === '__add_new__') {
+    sel.value = '';
+    openQuickAddDesig();
+  }
+}
+
+function openQuickAddDesig() {
+  document.getElementById('qdg_title').value = '';
+  document.getElementById('qdg_dept').value = '';
+  document.getElementById('qdg_grade').value = '';
+  document.getElementById('quickDesigOverlay').classList.add('open');
+  setTimeout(()=>document.getElementById('qdg_title').focus(), 200);
+}
+
+function closeQuickAddDesig() {
+  document.getElementById('quickDesigOverlay').classList.remove('open');
+}
+
+document.getElementById('quickDesigOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeQuickAddDesig();
+});
+
+function saveQuickDesig() {
+  const title = document.getElementById('qdg_title').value.trim();
+  const dept  = document.getElementById('qdg_dept').value.trim() || 'General';
+  const grade = document.getElementById('qdg_grade').value;
+  if (!title) { alert('Please enter a designation title.'); return; }
+  // Avoid duplicates
+  if (designations.find(d => d.title.toLowerCase() === title.toLowerCase())) {
+    alert(`"${title}" already exists. Select it from the dropdown.`);
+    closeQuickAddDesig();
+    document.getElementById('f_designation').value = title;
+    return;
+  }
+  const rec = { title, dept, grade, category: 'Other', notes: 'Added via quick-add' };
+  designations.push(rec);
+  saveDesignations();
+  rebuildDesigSelect();
+  // Auto-select the newly added designation in the PPE form
+  document.getElementById('f_designation').value = title;
+  closeQuickAddDesig();
+  showToast(`✅ "${title}" added & selected!`);
+}
+
+const GRADE_COLOR = {
+  'C-Suite / Director':   'rgba(232,64,64,0.15)|#e84040',
+  'Senior Manager':       'rgba(251,99,64,0.15)|#fb6340',
+  'Manager':              'rgba(244,163,26,0.15)|#f4a31a',
+  'Assistant Manager':    'rgba(244,200,26,0.15)|#d4b800',
+  'Supervisor':           'rgba(0,168,168,0.15)|#00a8a8',
+  'Senior Officer':       'rgba(45,206,137,0.12)|#2dce89',
+  'Officer':              'rgba(45,206,137,0.08)|#2dce89',
+  'Technician / Specialist':'rgba(100,130,200,0.15)|#7eb8e8',
+  'Operator':             'rgba(100,130,200,0.1)|#7eb8e8',
+  'General Worker':       'rgba(255,255,255,0.05)|#6a8aa8',
+  'Trainee / Intern':     'rgba(255,255,255,0.04)|#6a8aa8',
+  'Contract / Casual':    'rgba(255,255,255,0.04)|#6a8aa8',
+};
+
+function gradeBadge(grade) {
+  const c = GRADE_COLOR[grade] || 'rgba(255,255,255,0.05)|#6a8aa8';
+  const [bg,col] = c.split('|');
+  return `<span style="display:inline-block;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600;background:${bg};color:${col};border:1px solid ${col}33;white-space:nowrap">${grade}</span>`;
+}
+
+function renderDesig() {
+  rebuildDesigSelect();
+  const q = (document.getElementById('desigSearch').value||'').toLowerCase();
+  const dept = document.getElementById('desigDeptFilter').value;
+  let data = designations.filter(d => {
+    const m = d.title.toLowerCase().includes(q) || d.dept.toLowerCase().includes(q) || d.category.toLowerCase().includes(q);
+    if(!m) return false;
+    if(dept && d.dept !== dept) return false;
+    return true;
+  });
+
+  const usedTitles = new Set(records.map(r=>r.designation));
+  const depts = new Set(designations.map(d=>d.dept));
+
+  document.getElementById('desig-dept-count').textContent = depts.size;
+  document.getElementById('desig-total-count').textContent = designations.length;
+  document.getElementById('desig-used-count').textContent = [...usedTitles].filter(t=>designations.find(d=>d.title===t)).length;
+  document.getElementById('desigCount').textContent = `${data.length} designations`;
+  document.getElementById('desigFooterCount').textContent = `${data.length} of ${designations.length} designations`;
+
+  const body = document.getElementById('desigTableBody');
+  if (!data.length) {
+    body.innerHTML=`<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">🏢</div><p>No designations found. Add one using the button above.</p></div></td></tr>`;
+    return;
+  }
+
+  body.innerHTML = data.map((d,i) => {
+    const ri = designations.indexOf(d);
+    const inUse = usedTitles.has(d.title);
+    return `<tr>
+      <td style="color:var(--text-dim);font-family:'DM Mono',monospace;font-size:11px">${String(i+1).padStart(2,'0')}</td>
+      <td><div style="font-weight:600;color:#fff">${d.title}</div>${d.notes?`<div style="font-size:11px;color:var(--text-dim);margin-top:2px">${d.notes}</div>`:''}</td>
+      <td><span class="designation-badge">${d.dept}</span></td>
+      <td>${gradeBadge(d.grade||'—')}</td>
+      <td><span style="font-size:11px;color:var(--text-dim)">${d.category||'—'}</span></td>
+      <td>
+        ${inUse
+          ? `<span class="stock-pill stock-ok">✓ Active</span>`
+          : `<span class="stock-pill" style="background:rgba(255,255,255,0.04);color:var(--text-dim);border:1px solid var(--border)">— Unused</span>`}
+      </td>
+      <td><div class="actions-cell">
+        <button class="icon-btn edit" onclick="openDesigEdit(${ri})" title="Edit">✏️</button>
+        <button class="icon-btn del" onclick="deleteDesig(${ri})" title="Delete">🗑</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function openDesigModal() {
+  desigEditIndex=-1;
+  document.getElementById('desigModalTitle').textContent='Add Designation';
+  document.getElementById('dg_title').value='';
+  document.getElementById('dg_dept').value='';
+  document.getElementById('dg_grade').value='';
+  document.getElementById('dg_category').value='';
+  document.getElementById('dg_notes').value='';
+  document.getElementById('desigModalOverlay').classList.add('open');
+}
+
+function openDesigEdit(i) {
+  desigEditIndex=i;
+  const d=designations[i];
+  document.getElementById('desigModalTitle').textContent='Edit Designation';
+  document.getElementById('dg_title').value=d.title;
+  document.getElementById('dg_dept').value=d.dept;
+  document.getElementById('dg_grade').value=d.grade||'';
+  document.getElementById('dg_category').value=d.category||'';
+  document.getElementById('dg_notes').value=d.notes||'';
+  document.getElementById('desigModalOverlay').classList.add('open');
+}
+
+function closeDesigModal() { document.getElementById('desigModalOverlay').classList.remove('open'); }
+document.getElementById('desigModalOverlay').addEventListener('click',function(e){if(e.target===this)closeDesigModal();});
+
+function saveDesig() {
+  const title=document.getElementById('dg_title').value.trim();
+  const dept=document.getElementById('dg_dept').value.trim();
+  if(!title||!dept){alert('Please fill in Designation Title and Department.');return;}
+  const rec={
+    title, dept,
+    grade:document.getElementById('dg_grade').value,
+    category:document.getElementById('dg_category').value,
+    notes:document.getElementById('dg_notes').value.trim()
+  };
+  if(desigEditIndex>=0) designations[desigEditIndex]=rec; else designations.push(rec);
+  saveDesignations(); closeDesigModal(); renderDesig();
+  showToast(desigEditIndex>=0?'✅ Designation updated!':'✅ Designation added!');
+}
+
+function deleteDesig(i) {
+  const d=designations[i];
+  const inUse=records.some(r=>r.designation===d.title);
+  if(inUse && !confirm(`"${d.title}" is assigned to ${records.filter(r=>r.designation===d.title).length} personnel record(s). Delete anyway?`)) return;
+  if(!inUse && !confirm(`Delete designation "${d.title}"?`)) return;
+  designations.splice(i,1); saveDesignations(); renderDesig();
+  showToast('🗑 Designation deleted');
+}
+
+function exportDesigCSV() {
+  const headers=['#','Designation','Department','Grade / Level','Category','Notes'];
+  const rows=designations.map((d,i)=>[i+1,d.title,d.dept,d.grade||'',d.category||'',d.notes||'']);
+  const csv=[headers,...rows].map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download=`RSGT_Designations_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); showToast('⬇ Designations exported!');
+}
+
+// ═══════════════════════════════════════════
+// PPE DATA
+// ═══════════════════════════════════════════
+let records = JSON.parse(localStorage.getItem('hsse_ppe') || '[]');
+let editIndex = -1;
+let currentFilter = 'all';
+const toggleState = { shoe1:true, shoe2:false, shoe3:false, helmet:true, vest:true };
+
+if (records.length === 0) {
+  records = [
+    { name:'Khalid Al-Mansouri', id:'PORT-0001', designation:'HSSE Officer',
+      shoe1:{issued:true,size:'42'}, shoe2:{issued:true,size:'42'}, shoe3:{issued:false,size:''},
+      helmet:true, vest:true },
+    { name:'Fatima Binte Noor', id:'PORT-0002', designation:'Safety Inspector',
+      shoe1:{issued:true,size:'37'}, shoe2:{issued:false,size:''}, shoe3:{issued:false,size:''},
+      helmet:true, vest:true },
+    { name:'James Okonkwo', id:'PORT-0003', designation:'Crane Operator',
+      shoe1:{issued:true,size:'44'}, shoe2:{issued:true,size:'44'}, shoe3:{issued:true,size:'44'},
+      helmet:true, vest:true },
+    { name:'Ravi Shankar Menon', id:'PORT-0004', designation:'Stevedore',
+      shoe1:{issued:true,size:'40'}, shoe2:{issued:false,size:''}, shoe3:{issued:false,size:''},
+      helmet:false, vest:true },
+    { name:'Aisha Al-Farsi', id:'PORT-0005', designation:'Port Supervisor',
+      shoe1:{issued:true,size:'38'}, shoe2:{issued:true,size:'38'}, shoe3:{issued:false,size:''},
+      helmet:true, vest:false },
+  ];
+  savePPE();
+}
+
+function savePPE() { localStorage.setItem('hsse_ppe', JSON.stringify(records)); }
+
+function isCompliant(r) { return r.shoe1.issued && r.helmet && r.vest; }
+
+function updateStats() {
+  const t=records.length, c=records.filter(isCompliant).length;
+  document.getElementById('stat-total').textContent=t;
+  document.getElementById('stat-compliant').textContent=c;
+  document.getElementById('stat-pending').textContent=t-c;
+  document.getElementById('stat-helmets').textContent=records.filter(r=>r.helmet).length;
+  document.getElementById('stat-vests').textContent=records.filter(r=>r.vest).length;
+}
+
+function ppeBadge(issued, size) {
+  if (issued) {
+    const s=size?` · Sz ${size}`:'';
+    return `<span class="ppe-status ppe-issued">✓ Issued${s}</span>`;
+  }
+  return `<span class="ppe-status ppe-pending">⏳ Pending</span>`;
+}
+
+function renderTable() {
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  let data=records.filter(r => {
+    const m=r.name.toLowerCase().includes(q)||r.id.toLowerCase().includes(q)||r.designation.toLowerCase().includes(q);
+    if(!m) return false;
+    if(currentFilter==='compliant') return isCompliant(r);
+    if(currentFilter==='pending') return !isCompliant(r);
+    return true;
+  });
+  const body=document.getElementById('tableBody');
+  if(data.length===0) {
+    body.innerHTML=`<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">🔍</div><p>No records found.</p></div></td></tr>`;
+    document.getElementById('recordCount').textContent='0 records';
+    updateStats(); return;
+  }
+  body.innerHTML=data.map((r,i) => {
+    const ri=records.indexOf(r);
+    return `<tr>
+      <td style="color:var(--text-dim);font-family:'DM Mono',monospace;font-size:11px">${String(i+1).padStart(2,'0')}</td>
+      <td><div class="employee-name">${r.name}</div><div class="employee-id">${r.id}</div></td>
+      <td><span class="designation-badge">${r.designation}</span></td>
+      <td class="ppe-cell" style="border-left:1px solid rgba(0,168,168,0.1)">${ppeBadge(r.shoe1.issued,r.shoe1.size)}</td>
+      <td class="ppe-cell">${ppeBadge(r.shoe2.issued,r.shoe2.size)}</td>
+      <td class="ppe-cell" style="border-right:1px solid rgba(0,168,168,0.1)">${ppeBadge(r.shoe3.issued,r.shoe3.size)}</td>
+      <td class="ppe-cell">${ppeBadge(r.helmet,null)}</td>
+      <td class="ppe-cell">${ppeBadge(r.vest,null)}</td>
+      <td><div class="actions-cell">
+        <button class="icon-btn edit" onclick="openEdit(${ri})" title="Edit">✏️</button>
+        <button class="icon-btn del" onclick="deleteRecord(${ri})" title="Delete">🗑</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('recordCount').textContent=`${data.length} of ${records.length} records`;
+  updateStats();
+}
+
+function setFilter(f,btn) {
+  currentFilter=f;
+  document.querySelectorAll('.filter-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); renderTable();
+}
+
+function setToggle(key,val,btn) {
+  toggleState[key]=val;
+  btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('active-issued','active-pending'));
+  btn.classList.add(val?'active-issued':'active-pending');
+}
+
+function resetToggles(r) {
+  const pairs=['shoe1','shoe2','shoe3'];
+  pairs.forEach(key=>{
+    const v=r?r[key].issued:(key==='shoe1');
+    toggleState[key]=v;
+    const tog=document.getElementById(`${key}-toggle`);
+    tog.querySelectorAll('button').forEach(b=>b.classList.remove('active-issued','active-pending'));
+    tog.querySelectorAll('button')[v?0:1].classList.add(v?'active-issued':'active-pending');
+  });
+  ['helmet','vest'].forEach(key=>{
+    const v=r?r[key]:true;
+    toggleState[key]=v;
+    const tog=document.getElementById(`${key}-toggle`);
+    tog.querySelectorAll('button').forEach(b=>b.classList.remove('active-issued','active-pending'));
+    tog.querySelectorAll('button')[v?0:1].classList.add(v?'active-issued':'active-pending');
+  });
+}
+
+function openModal() {
+  editIndex=-1;
+  document.getElementById('modalTitle').textContent='Add Personnel';
+  ['f_name','f_id','f_shoe1_size','f_shoe2_size','f_shoe3_size'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f_designation').value='';
+  resetToggles(null);
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function openEdit(i) {
+  editIndex=i; const r=records[i];
+  document.getElementById('modalTitle').textContent='Edit Personnel';
+  document.getElementById('f_name').value=r.name;
+  document.getElementById('f_id').value=r.id;
+  document.getElementById('f_designation').value=r.designation;
+  document.getElementById('f_shoe1_size').value=r.shoe1.size;
+  document.getElementById('f_shoe2_size').value=r.shoe2.size;
+  document.getElementById('f_shoe3_size').value=r.shoe3.size;
+  resetToggles(r);
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+
+document.getElementById('modalOverlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+function saveRecord() {
+  const name=document.getElementById('f_name').value.trim();
+  const id=document.getElementById('f_id').value.trim();
+  const desig=document.getElementById('f_designation').value;
+  if(!name||!id||!desig){alert('Please fill in Name, ID, and Designation.');return;}
+  const rec={
+    name,id,designation:desig,
+    shoe1:{issued:toggleState.shoe1,size:document.getElementById('f_shoe1_size').value.trim()},
+    shoe2:{issued:toggleState.shoe2,size:document.getElementById('f_shoe2_size').value.trim()},
+    shoe3:{issued:toggleState.shoe3,size:document.getElementById('f_shoe3_size').value.trim()},
+    helmet:toggleState.helmet, vest:toggleState.vest,
+  };
+  if(editIndex>=0) records[editIndex]=rec; else records.push(rec);
+  savePPE(); closeModal(); renderTable();
+  showToast(editIndex>=0?'✅ Record updated!':'✅ Personnel added!');
+}
+
+function deleteRecord(i) {
+  if(!confirm(`Delete record for "${records[i].name}"?`)) return;
+  records.splice(i,1); savePPE(); renderTable(); showToast('🗑 Record deleted');
+}
+
+function exportCSV() {
+  const headers=['#','Name','ID','Designation','Shoe 1st','Sz1','Shoe 2nd','Sz2','Shoe 3rd','Sz3','Helmet','Vest'];
+  const rows=records.map((r,i)=>[
+    i+1,r.name,r.id,r.designation,
+    r.shoe1.issued?'Issued':'Pending',r.shoe1.size,
+    r.shoe2.issued?'Issued':'Pending',r.shoe2.size,
+    r.shoe3.issued?'Issued':'Pending',r.shoe3.size,
+    r.helmet?'Issued':'Pending', r.vest?'Issued':'Pending',
+  ]);
+  const csv=[headers,...rows].map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download=`HSSE_PPE_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); showToast('⬇ CSV exported!');
+}
+
+// ═══════════════════════════════════════════
+// STORE INVENTORY DATA
+// ═══════════════════════════════════════════
+let invItems = JSON.parse(localStorage.getItem('hsse_inventory') || '[]');
+let invEditIndex = -1;
+let invFilter = 'all';
+
+if (invItems.length === 0) {
+  invItems = [
+    { code:'PPE-001', name:'Safety Helmet (Blue)', category:'PPE', unit:'Pcs', qty:45, min:10, location:'Shelf A-1', supplier:'Gulf Safety' },
+    { code:'PPE-002', name:'Safety Vest (Orange)', category:'PPE', unit:'Pcs', qty:38, min:15, location:'Shelf A-2', supplier:'Gulf Safety' },
+    { code:'PPE-003', name:'Safety Shoes (Pair)', category:'PPE', unit:'Pairs', qty:8, min:10, location:'Shelf A-3', supplier:'Atlas Safety' },
+    { code:'PPE-004', name:'Safety Gloves (Heavy Duty)', category:'PPE', unit:'Pairs', qty:0, min:20, location:'Shelf A-4', supplier:'Gulf Safety' },
+    { code:'CON-001', name:'Hand Sanitizer 500ml', category:'Consumables', unit:'Box', qty:12, min:5, location:'Shelf B-1', supplier:'Local' },
+    { code:'TOL-001', name:'Fire Extinguisher (CO2)', category:'Tools & Equipment', unit:'Pcs', qty:6, min:4, location:'Store Room 1', supplier:'Al-Falah Safety' },
+  ];
+  saveInventory();
+}
+
+function saveInventory() { localStorage.setItem('hsse_inventory', JSON.stringify(invItems)); }
+
+function getStockStatus(item) {
+  if (item.qty === 0) return 'out';
+  if (item.qty < item.min) return 'low';
+  return 'ok';
+}
+
+function stockPill(item) {
+  const s = getStockStatus(item);
+  if (s==='ok') return `<span class="stock-pill stock-ok">✓ In Stock</span>`;
+  if (s==='low') return `<span class="stock-pill stock-low">⚠ Low Stock</span>`;
+  return `<span class="stock-pill stock-out">✗ Out of Stock</span>`;
+}
+
+function updateInvStats() {
+  document.getElementById('inv-total').textContent = invItems.length;
+  document.getElementById('inv-ok').textContent = invItems.filter(i=>getStockStatus(i)==='ok').length;
+  document.getElementById('inv-low').textContent = invItems.filter(i=>getStockStatus(i)==='low').length;
+  document.getElementById('inv-out').textContent = invItems.filter(i=>getStockStatus(i)==='out').length;
+}
+
+function setInvFilter(f,btn) {
+  invFilter=f;
+  document.querySelectorAll('#page-store .filter-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); renderInventory();
+}
+
+function adjustQty(idx, delta) {
+  invItems[idx].qty = Math.max(0, invItems[idx].qty + delta);
+  saveInventory(); renderInventory();
+  showToast(delta>0?`+${delta} added to stock`:`${delta} removed from stock`);
+}
+
+function renderInventory() {
+  const q = document.getElementById('invSearch').value.toLowerCase();
+  const cat = document.getElementById('invCatFilter').value;
+  let data = invItems.filter(item => {
+    const m = item.name.toLowerCase().includes(q) || item.code.toLowerCase().includes(q);
+    if(!m) return false;
+    if(cat && item.category !== cat) return false;
+    const s = getStockStatus(item);
+    if(invFilter==='ok') return s==='ok';
+    if(invFilter==='low') return s==='low';
+    if(invFilter==='out') return s==='out';
+    return true;
+  });
+
+  const body = document.getElementById('invTableBody');
+  if(data.length===0) {
+    body.innerHTML=`<tr><td colspan="10"><div class="empty-state"><div class="empty-icon">📦</div><p>No inventory items found. Add materials using the button above.</p></div></td></tr>`;
+    document.getElementById('invCount').textContent='0 items';
+    updateInvStats(); return;
+  }
+
+  body.innerHTML = data.map((item,i)=>{
+    const ri = invItems.indexOf(item);
+    return `<tr>
+      <td style="color:var(--text-dim);font-family:'DM Mono',monospace;font-size:11px">${String(i+1).padStart(2,'0')}</td>
+      <td><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--teal-light)">${item.code}</span></td>
+      <td><div style="font-weight:600;color:#fff">${item.name}</div><div style="font-size:11px;color:var(--text-dim);margin-top:2px">${item.supplier||''}</div></td>
+      <td><span class="category-badge">${item.category}</span></td>
+      <td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text-dim)">${item.unit}</td>
+      <td class="ppe-cell">
+        <div class="qty-ctrl" style="justify-content:center">
+          <button class="qty-btn" onclick="adjustQty(${ri},-1)">−</button>
+          <span class="qty-val">${item.qty}</span>
+          <button class="qty-btn" onclick="adjustQty(${ri},1)">+</button>
+        </div>
+      </td>
+      <td class="ppe-cell" style="font-family:'DM Mono',monospace;color:var(--text-dim)">${item.min}</td>
+      <td>${stockPill(item)}</td>
+      <td style="font-size:12px;color:var(--text-dim)">${item.location||'—'}</td>
+      <td><div class="actions-cell">
+        <button class="icon-btn edit" onclick="openInvEdit(${ri})" title="Edit">✏️</button>
+        <button class="icon-btn del" onclick="deleteInvItem(${ri})" title="Delete">🗑</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('invCount').textContent=`${data.length} of ${invItems.length} items`;
+  document.getElementById('invDateStamp').textContent='Last updated: '+new Date().toLocaleString('en-GB');
+  updateInvStats();
+}
+
+function openInvModal() {
+  invEditIndex=-1;
+  document.getElementById('invModalTitle').textContent='Add Material';
+  ['iv_code','iv_name','iv_location','iv_supplier'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('iv_category').value='';
+  document.getElementById('iv_unit').value='Pcs';
+  document.getElementById('iv_qty').value='';
+  document.getElementById('iv_min').value='5';
+  document.getElementById('invModalOverlay').classList.add('open');
+}
+
+function openInvEdit(i) {
+  invEditIndex=i; const it=invItems[i];
+  document.getElementById('invModalTitle').textContent='Edit Material';
+  document.getElementById('iv_code').value=it.code;
+  document.getElementById('iv_name').value=it.name;
+  document.getElementById('iv_category').value=it.category;
+  document.getElementById('iv_unit').value=it.unit;
+  document.getElementById('iv_qty').value=it.qty;
+  document.getElementById('iv_min').value=it.min;
+  document.getElementById('iv_location').value=it.location||'';
+  document.getElementById('iv_supplier').value=it.supplier||'';
+  document.getElementById('invModalOverlay').classList.add('open');
+}
+
+function closeInvModal() { document.getElementById('invModalOverlay').classList.remove('open'); }
+
+document.getElementById('invModalOverlay').addEventListener('click',function(e){if(e.target===this)closeInvModal();});
+
+function saveInvRecord() {
+  const code=document.getElementById('iv_code').value.trim();
+  const name=document.getElementById('iv_name').value.trim();
+  const category=document.getElementById('iv_category').value;
+  if(!code||!name||!category){alert('Please fill in Code, Name, and Category.');return;}
+  const rec={
+    code, name, category,
+    unit:document.getElementById('iv_unit').value,
+    qty:parseInt(document.getElementById('iv_qty').value)||0,
+    min:parseInt(document.getElementById('iv_min').value)||0,
+    location:document.getElementById('iv_location').value.trim(),
+    supplier:document.getElementById('iv_supplier').value.trim(),
+  };
+  if(invEditIndex>=0) invItems[invEditIndex]=rec; else invItems.push(rec);
+  saveInventory(); closeInvModal(); renderInventory();
+  showToast(invEditIndex>=0?'✅ Item updated!':'✅ Material added!');
+}
+
+function deleteInvItem(i) {
+  if(!confirm(`Delete "${invItems[i].name}"?`)) return;
+  invItems.splice(i,1); saveInventory(); renderInventory(); showToast('🗑 Item deleted');
+}
+
+function exportInvCSV() {
+  const headers=['#','Code','Name','Category','Unit','Qty in Stock','Min Stock','Status','Location','Supplier'];
+  const rows=invItems.map((it,i)=>[
+    i+1,it.code,it.name,it.category,it.unit,it.qty,it.min,getStockStatus(it).toUpperCase(),it.location||'',it.supplier||''
+  ]);
+  const csv=[headers,...rows].map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download=`RSGT_StoreInventory_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); showToast('⬇ Inventory exported!');
+}
+
+// ═══════════════════════════════════════════
+// TOAST & CLOCK
+// ═══════════════════════════════════════════
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+function updateClock() {
+  const now=new Date();
+  document.getElementById('clock').textContent=
+    now.toLocaleTimeString('en-GB')+' · '+now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+}
+setInterval(updateClock,1000); updateClock();
+document.getElementById('dateStamp').textContent='Last updated: '+new Date().toLocaleString('en-GB');
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+rebuildDesigSelect();
+renderTable();
+renderInventory();
+</script>
+
+
+</body></html>
