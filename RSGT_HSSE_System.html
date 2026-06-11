@@ -852,14 +852,20 @@
               <th rowspan="2" style="min-width:160px">Personnel</th>
               <th rowspan="2" style="min-width:140px">Designation</th>
               <th colspan="3" class="group-header" style="min-width:240px">🥾 Safety Shoes</th>
-              <th rowspan="2" class="group-header" style="min-width:100px">🪖 Helmet</th>
-              <th rowspan="2" class="group-header" style="min-width:100px">🦺 Safety Vest</th>
+              <th colspan="3" class="group-header" style="min-width:240px">🪖 Helmets</th>
+              <th colspan="3" class="group-header" style="min-width:240px">🦺 Safety Vests</th>
               <th rowspan="2" style="min-width:90px">Actions</th>
             </tr>
             <tr>
               <th style="text-align:center;border-left:1px solid rgba(0,168,168,0.1)">1st Pair</th>
               <th style="text-align:center">2nd Pair</th>
               <th style="text-align:center;border-right:1px solid rgba(0,168,168,0.1)">3rd Pair</th>
+              <th style="text-align:center;border-left:1px solid rgba(0,168,168,0.1)">1st</th>
+              <th style="text-align:center">2nd</th>
+              <th style="text-align:center;border-right:1px solid rgba(0,168,168,0.1)">3rd</th>
+              <th style="text-align:center;border-left:1px solid rgba(0,168,168,0.1)">1st</th>
+              <th style="text-align:center">2nd</th>
+              <th style="text-align:center;border-right:1px solid rgba(0,168,168,0.1)">3rd</th>
             </tr>
           </thead>
           <tbody id="tableBody"><tr>
@@ -1260,20 +1266,53 @@
           </div>
         </div>
         <div>
-          <div class="form-section-title">Head &amp; Body Protection</div>
+          <div class="form-section-title">🪖 Helmet (Up to 3)</div>
           <div class="ppe-grid">
             <div class="ppe-toggle-group">
-              <label>🪖 Helmet</label>
-              <div class="toggle-select" id="helmet-toggle">
-                <button onclick="setToggle(&#39;helmet&#39;,true,this)" class="active-issued">Issued</button>
-                <button onclick="setToggle(&#39;helmet&#39;,false,this)">Pending</button>
+              <label>1st Helmet</label>
+              <div class="toggle-select" id="helmet1-toggle">
+                <button onclick="setToggle(&#39;helmet1&#39;,true,this)" class="active-issued">Issued</button>
+                <button onclick="setToggle(&#39;helmet1&#39;,false,this)">Pending</button>
               </div>
             </div>
             <div class="ppe-toggle-group">
-              <label>🦺 Safety Vest</label>
-              <div class="toggle-select" id="vest-toggle">
-                <button onclick="setToggle(&#39;vest&#39;,true,this)" class="active-issued">Issued</button>
-                <button onclick="setToggle(&#39;vest&#39;,false,this)">Pending</button>
+              <label>2nd Helmet</label>
+              <div class="toggle-select" id="helmet2-toggle">
+                <button onclick="setToggle(&#39;helmet2&#39;,true,this)">Issued</button>
+                <button onclick="setToggle(&#39;helmet2&#39;,false,this)" class="active-pending">Pending</button>
+              </div>
+            </div>
+            <div class="ppe-toggle-group">
+              <label>3rd Helmet</label>
+              <div class="toggle-select" id="helmet3-toggle">
+                <button onclick="setToggle(&#39;helmet3&#39;,true,this)">Issued</button>
+                <button onclick="setToggle(&#39;helmet3&#39;,false,this)" class="active-pending">Pending</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="form-section-title">🦺 Safety Vest (Up to 3)</div>
+          <div class="ppe-grid">
+            <div class="ppe-toggle-group">
+              <label>1st Vest</label>
+              <div class="toggle-select" id="vest1-toggle">
+                <button onclick="setToggle(&#39;vest1&#39;,true,this)" class="active-issued">Issued</button>
+                <button onclick="setToggle(&#39;vest1&#39;,false,this)">Pending</button>
+              </div>
+            </div>
+            <div class="ppe-toggle-group">
+              <label>2nd Vest</label>
+              <div class="toggle-select" id="vest2-toggle">
+                <button onclick="setToggle(&#39;vest2&#39;,true,this)">Issued</button>
+                <button onclick="setToggle(&#39;vest2&#39;,false,this)" class="active-pending">Pending</button>
+              </div>
+            </div>
+            <div class="ppe-toggle-group">
+              <label>3rd Vest</label>
+              <div class="toggle-select" id="vest3-toggle">
+                <button onclick="setToggle(&#39;vest3&#39;,true,this)">Issued</button>
+                <button onclick="setToggle(&#39;vest3&#39;,false,this)" class="active-pending">Pending</button>
               </div>
             </div>
           </div>
@@ -1886,25 +1925,25 @@ function exportDesigCSV() {
 let records = JSON.parse(localStorage.getItem('hsse_ppe') || '[]');
 let editIndex = -1;
 let currentFilter = 'all';
-const toggleState = { shoe1:true, shoe2:false, shoe3:false, helmet:true, vest:true };
+const toggleState = { shoe1:true, shoe2:false, shoe3:false, helmet1:true, helmet2:false, helmet3:false, vest1:true, vest2:false, vest3:false };
 
 if (records.length === 0) {
   records = [
     { name:'Khalid Al-Mansouri', id:'PORT-0001', designation:'HSSE Officer',
       shoe1:{issued:true,size:'42'}, shoe2:{issued:true,size:'42'}, shoe3:{issued:false,size:''},
-      helmet:true, vest:true },
+      helmet1:true, helmet2:false, helmet3:false, vest1:true, vest2:false, vest3:false },
     { name:'Fatima Binte Noor', id:'PORT-0002', designation:'Safety Inspector',
       shoe1:{issued:true,size:'37'}, shoe2:{issued:false,size:''}, shoe3:{issued:false,size:''},
-      helmet:true, vest:true },
+      helmet1:true, helmet2:false, helmet3:false, vest1:true, vest2:false, vest3:false },
     { name:'James Okonkwo', id:'PORT-0003', designation:'Crane Operator',
       shoe1:{issued:true,size:'44'}, shoe2:{issued:true,size:'44'}, shoe3:{issued:true,size:'44'},
-      helmet:true, vest:true },
+      helmet1:true, helmet2:false, helmet3:false, vest1:true, vest2:false, vest3:false },
     { name:'Ravi Shankar Menon', id:'PORT-0004', designation:'Stevedore',
       shoe1:{issued:true,size:'40'}, shoe2:{issued:false,size:''}, shoe3:{issued:false,size:''},
-      helmet:false, vest:true },
+      helmet1:false, helmet2:false, helmet3:false, vest1:true, vest2:false, vest3:false },
     { name:'Aisha Al-Farsi', id:'PORT-0005', designation:'Port Supervisor',
       shoe1:{issued:true,size:'38'}, shoe2:{issued:true,size:'38'}, shoe3:{issued:false,size:''},
-      helmet:true, vest:false },
+      helmet1:true, helmet2:false, helmet3:false, vest1:false, vest2:false, vest3:false },
   ];
   savePPE();
 }
@@ -1915,20 +1954,30 @@ function savePPE() {
 }
 
 function getPpeInventoryItem(type) {
+  if (!invItems || invItems.length === 0) {
+    console.warn(`[Inventory Sync] invItems is empty or invalid. Cannot find ${type} item.`);
+    return null;
+  }
+  
   const matchers = {
     shoe: item => /shoe/i.test(item.name) || item.code === 'PPE-003',
     helmet: item => /helmet/i.test(item.name) || item.code === 'PPE-001',
     vest: item => /vest/i.test(item.name) || item.code === 'PPE-002',
   };
-  return invItems.find(matchers[type]);
+  
+  const item = invItems.find(matchers[type]);
+  if (!item) {
+    console.warn(`[Inventory Sync] Could not find inventory item for type: ${type}`);
+  }
+  return item;
 }
 
 function getPpeIssueCounts(record) {
   if (!record) return { shoe: 0, helmet: 0, vest: 0 };
   return {
     shoe: [record.shoe1, record.shoe2, record.shoe3].filter(item => item && item.issued).length,
-    helmet: record.helmet ? 1 : 0,
-    vest: record.vest ? 1 : 0,
+    helmet: [record.helmet1, record.helmet2, record.helmet3].filter(item => item).length,
+    vest: [record.vest1, record.vest2, record.vest3].filter(item => item).length,
   };
 }
 
@@ -1942,9 +1991,14 @@ function syncPpeInventory(previousRecord, nextRecord) {
     if (delta === 0) return;
 
     const item = getPpeInventoryItem(type);
-    if (!item) return;
+    if (!item) {
+      console.warn(`[Inventory Sync] No inventory item found for ${type}. Available items:`, invItems.map(i => i.name));
+      return;
+    }
 
+    const oldQty = item.qty;
     item.qty = Math.max(0, item.qty - delta);
+    console.log(`[Inventory Sync] ${type}: ${oldQty} → ${item.qty} (delta: ${delta > 0 ? '+' : ''}${delta})`);
     changed = true;
   });
 
@@ -1953,15 +2007,15 @@ function syncPpeInventory(previousRecord, nextRecord) {
   if (document.getElementById('invTableBody')) renderInventory();
 }
 
-function isCompliant(r) { return r.shoe1.issued && r.helmet && r.vest; }
+function isCompliant(r) { return r.shoe1.issued && r.helmet1 && r.vest1; }
 
 function updateStats() {
   const t=records.length, c=records.filter(isCompliant).length;
   document.getElementById('stat-total').textContent=t;
   document.getElementById('stat-compliant').textContent=c;
   document.getElementById('stat-pending').textContent=t-c;
-  document.getElementById('stat-helmets').textContent=records.filter(r=>r.helmet).length;
-  document.getElementById('stat-vests').textContent=records.filter(r=>r.vest).length;
+  document.getElementById('stat-helmets').textContent=records.reduce((sum,r)=>[r.helmet1,r.helmet2,r.helmet3].filter(h=>h).length+sum,0);
+  document.getElementById('stat-vests').textContent=records.reduce((sum,r)=>[r.vest1,r.vest2,r.vest3].filter(v=>v).length+sum,0);
 }
 
 function ppeBadge(issued, size) {
@@ -1983,7 +2037,7 @@ function renderTable() {
   });
   const body=document.getElementById('tableBody');
   if(data.length===0) {
-    body.innerHTML=`<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">🔍</div><p>No records found.</p></div></td></tr>`;
+    body.innerHTML=`<tr><td colspan="13"><div class="empty-state"><div class="empty-icon">🔍</div><p>No records found.</p></div></td></tr>`;
     document.getElementById('recordCount').textContent='0 records';
     updateStats(); return;
   }
@@ -1996,8 +2050,12 @@ function renderTable() {
       <td class="ppe-cell" style="border-left:1px solid rgba(0,168,168,0.1)">${ppeBadge(r.shoe1.issued,r.shoe1.size)}</td>
       <td class="ppe-cell">${ppeBadge(r.shoe2.issued,r.shoe2.size)}</td>
       <td class="ppe-cell" style="border-right:1px solid rgba(0,168,168,0.1)">${ppeBadge(r.shoe3.issued,r.shoe3.size)}</td>
-      <td class="ppe-cell">${ppeBadge(r.helmet,null)}</td>
-      <td class="ppe-cell">${ppeBadge(r.vest,null)}</td>
+      <td class="ppe-cell" style="border-left:1px solid rgba(0,168,168,0.1)">${ppeBadge(r.helmet1,null)}</td>
+      <td class="ppe-cell">${ppeBadge(r.helmet2,null)}</td>
+      <td class="ppe-cell" style="border-right:1px solid rgba(0,168,168,0.1)">${ppeBadge(r.helmet3,null)}</td>
+      <td class="ppe-cell" style="border-left:1px solid rgba(0,168,168,0.1)">${ppeBadge(r.vest1,null)}</td>
+      <td class="ppe-cell">${ppeBadge(r.vest2,null)}</td>
+      <td class="ppe-cell" style="border-right:1px solid rgba(0,168,168,0.1)">${ppeBadge(r.vest3,null)}</td>
       <td><div class="actions-cell">
         <button class="icon-btn edit" onclick="openEdit(${ri})" title="Edit">✏️</button>
         <button class="icon-btn del" onclick="deleteRecord(${ri})" title="Delete">🗑</button>
@@ -2029,8 +2087,17 @@ function resetToggles(r) {
     tog.querySelectorAll('button').forEach(b=>b.classList.remove('active-issued','active-pending'));
     tog.querySelectorAll('button')[v?0:1].classList.add(v?'active-issued':'active-pending');
   });
-  ['helmet','vest'].forEach(key=>{
-    const v=r?r[key]:true;
+  const helmets=['helmet1','helmet2','helmet3'];
+  helmets.forEach(key=>{
+    const v=r?r[key]:(key==='helmet1');
+    toggleState[key]=v;
+    const tog=document.getElementById(`${key}-toggle`);
+    tog.querySelectorAll('button').forEach(b=>b.classList.remove('active-issued','active-pending'));
+    tog.querySelectorAll('button')[v?0:1].classList.add(v?'active-issued':'active-pending');
+  });
+  const vests=['vest1','vest2','vest3'];
+  vests.forEach(key=>{
+    const v=r?r[key]:(key==='vest1');
     toggleState[key]=v;
     const tog=document.getElementById(`${key}-toggle`);
     tog.querySelectorAll('button').forEach(b=>b.classList.remove('active-issued','active-pending'));
@@ -2075,7 +2142,8 @@ function saveRecord() {
     shoe1:{issued:toggleState.shoe1,size:document.getElementById('f_shoe1_size').value.trim()},
     shoe2:{issued:toggleState.shoe2,size:document.getElementById('f_shoe2_size').value.trim()},
     shoe3:{issued:toggleState.shoe3,size:document.getElementById('f_shoe3_size').value.trim()},
-    helmet:toggleState.helmet, vest:toggleState.vest,
+    helmet1:toggleState.helmet1, helmet2:toggleState.helmet2, helmet3:toggleState.helmet3,
+    vest1:toggleState.vest1, vest2:toggleState.vest2, vest3:toggleState.vest3,
   };
   if(editIndex>=0) records[editIndex]=rec; else records.push(rec);
   syncPpeInventory(previousRecord, rec);
@@ -2317,6 +2385,20 @@ async function bootstrapApp() {
   rebuildDesigSelect();
   renderTable();
   renderInventory();
+  
+  // Ensure invItems is never empty after loading
+  if (!Array.isArray(invItems) || invItems.length === 0) {
+    invItems = [
+      { code:'PPE-001', name:'Safety Helmet (Blue)', category:'PPE', unit:'Pcs', qty:45, min:10, location:'Shelf A-1', supplier:'Gulf Safety' },
+      { code:'PPE-002', name:'Safety Vest (Orange)', category:'PPE', unit:'Pcs', qty:38, min:15, location:'Shelf A-2', supplier:'Gulf Safety' },
+      { code:'PPE-003', name:'Safety Shoes (Pair)', category:'PPE', unit:'Pairs', qty:8, min:10, location:'Shelf A-3', supplier:'Atlas Safety' },
+      { code:'PPE-004', name:'Safety Gloves (Heavy Duty)', category:'PPE', unit:'Pairs', qty:0, min:20, location:'Shelf A-4', supplier:'Gulf Safety' },
+      { code:'CON-001', name:'Hand Sanitizer 500ml', category:'Consumables', unit:'Box', qty:12, min:5, location:'Shelf B-1', supplier:'Local' },
+      { code:'TOL-001', name:'Fire Extinguisher (CO2)', category:'Tools & Equipment', unit:'Pcs', qty:6, min:4, location:'Store Room 1', supplier:'Al-Falah Safety' },
+    ];
+    saveInventory();
+    renderInventory();
+  }
 }
 
 bootstrapApp();
