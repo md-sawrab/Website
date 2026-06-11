@@ -2365,35 +2365,7 @@ document.getElementById('dateStamp').textContent='Last updated: '+new Date().toL
 // INIT
 // ═══════════════════════════════════════════
 async function bootstrapApp() {
-  // Load from local storage first
-  const localInventory = localStorage.getItem('hsse_inventory');
-  if (localInventory) {
-    try {
-      const parsed = JSON.parse(localInventory);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        invItems = parsed;
-        console.log('[Bootstrap] Loaded inventory from localStorage:', invItems.length, 'items');
-      }
-    } catch (e) {
-      console.warn('[Bootstrap] localStorage inventory corrupted, using defaults');
-    }
-  }
-
-  // Ensure we have valid inventory before Google Sheets sync
-  if (!Array.isArray(invItems) || invItems.length === 0) {
-    console.log('[Bootstrap] Initializing default inventory');
-    invItems = [
-      { code:'PPE-001', name:'Safety Helmet (Blue)', category:'PPE', unit:'Pcs', qty:45, min:10, location:'Shelf A-1', supplier:'Gulf Safety' },
-      { code:'PPE-002', name:'Safety Vest (Orange)', category:'PPE', unit:'Pcs', qty:38, min:15, location:'Shelf A-2', supplier:'Gulf Safety' },
-      { code:'PPE-003', name:'Safety Shoes (Pair)', category:'PPE', unit:'Pairs', qty:8, min:10, location:'Shelf A-3', supplier:'Atlas Safety' },
-      { code:'PPE-004', name:'Safety Gloves (Heavy Duty)', category:'PPE', unit:'Pairs', qty:0, min:20, location:'Shelf A-4', supplier:'Gulf Safety' },
-      { code:'CON-001', name:'Hand Sanitizer 500ml', category:'Consumables', unit:'Box', qty:12, min:5, location:'Shelf B-1', supplier:'Local' },
-      { code:'TOL-001', name:'Fire Extinguisher (CO2)', category:'Tools & Equipment', unit:'Pcs', qty:6, min:4, location:'Store Room 1', supplier:'Al-Falah Safety' },
-    ];
-    saveInventory();
-  }
-
-  // Try Google Sheets sync if endpoint available
+  // Google Sheets sync - async operation
   if (getSharedEndpoint()) {
     const [sharedDesignations, sharedRecords, sharedInventory] = await Promise.all([
       loadSharedCollection('designations', designations),
@@ -2410,34 +2382,21 @@ async function bootstrapApp() {
     // Only update inventory from Google Sheets if we got valid data
     if (Array.isArray(sharedInventory) && sharedInventory.length > 0) {
       invItems = sharedInventory;
-      console.log('[Bootstrap] Loaded inventory from Google Sheets');
     } else {
-      // Save our local inventory to Google Sheets
-      await saveSharedCollection('inventory', invItems);
+      // Save our local inventory to Google Sheets if it's valid
+      if (Array.isArray(invItems) && invItems.length > 0) {
+        await saveSharedCollection('inventory', invItems);
+      }
     }
   }
 
   rebuildDesigSelect();
   renderTable();
   renderInventory();
-  
-  // Final sanity check - ensure invItems is valid
-  if (!Array.isArray(invItems) || invItems.length === 0) {
-    console.error('[Bootstrap] CRITICAL: invItems still empty after all loading attempts!');
-    invItems = [
-      { code:'PPE-001', name:'Safety Helmet (Blue)', category:'PPE', unit:'Pcs', qty:45, min:10, location:'Shelf A-1', supplier:'Gulf Safety' },
-      { code:'PPE-002', name:'Safety Vest (Orange)', category:'PPE', unit:'Pcs', qty:38, min:15, location:'Shelf A-2', supplier:'Gulf Safety' },
-      { code:'PPE-003', name:'Safety Shoes (Pair)', category:'PPE', unit:'Pairs', qty:8, min:10, location:'Shelf A-3', supplier:'Atlas Safety' },
-      { code:'PPE-004', name:'Safety Gloves (Heavy Duty)', category:'PPE', unit:'Pairs', qty:0, min:20, location:'Shelf A-4', supplier:'Gulf Safety' },
-      { code:'CON-001', name:'Hand Sanitizer 500ml', category:'Consumables', unit:'Box', qty:12, min:5, location:'Shelf B-1', supplier:'Local' },
-      { code:'TOL-001', name:'Fire Extinguisher (CO2)', category:'Tools & Equipment', unit:'Pcs', qty:6, min:4, location:'Store Room 1', supplier:'Al-Falah Safety' },
-    ];
-    saveInventory();
-    renderInventory();
-  }
 }
 
-bootstrapApp();
+// Start Google Sheets sync in background
+bootstrapApp().catch(err => console.warn('[Bootstrap] Async sync error:', err));
 </script>
 
 
