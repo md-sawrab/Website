@@ -1501,6 +1501,66 @@ function logout() {
   pinBuffer=''; updateDots();
 }
 
+// ═══════════════════════════════════════════
+// SHARED STORAGE (GOOGLE SHEETS)
+// ═══════════════════════════════════════════
+const SHARED_STORAGE_ENABLED = true;
+window.__HSSE_GOOGLE_SHEETS__ = window.__HSSE_GOOGLE_SHEETS__ || {
+  endpoint: 'https://script.google.com/macros/s/AKfycbwV1VPpezWi0Av6G5RxymMLuq1nU9XMQ0D98Ji45d1ppLT1gp4cb2J6QxNr9Z_6Pqn-/exec',
+};
+const SHARED_STORAGE_CONFIG = window.__HSSE_GOOGLE_SHEETS__;
+
+function getSharedEndpoint() {
+  if (!SHARED_STORAGE_ENABLED) return '';
+  return String(SHARED_STORAGE_CONFIG.endpoint || '').trim();
+}
+
+async function loadSharedCollection(key, fallback) {
+  const endpoint = getSharedEndpoint();
+  if (!endpoint) {
+    const raw = localStorage.getItem(`hsse_${key}`);
+    return raw ? JSON.parse(raw) : fallback;
+  }
+
+  try {
+    const url = new URL(endpoint);
+    url.searchParams.set('action', 'load');
+    url.searchParams.set('key', key);
+
+    const response = await fetch(url.toString(), { method: 'GET' });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    const payload = await response.json();
+    if (payload && payload.ok && Array.isArray(payload.data)) return payload.data;
+  } catch (error) {
+    console.warn(`Google Sheets load failed for ${key}:`, error.message);
+  }
+
+  const raw = localStorage.getItem(`hsse_${key}`);
+  return raw ? JSON.parse(raw) : fallback;
+}
+
+async function saveSharedCollection(key, value) {
+  localStorage.setItem(`hsse_${key}`, JSON.stringify(value));
+
+  const endpoint = getSharedEndpoint();
+  if (!endpoint) return;
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'save', key, data: value }),
+    });
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const payload = await response.json();
+    if (!payload || !payload.ok) throw new Error(payload && payload.error ? payload.error : 'Unknown error');
+  } catch (error) {
+    console.warn(`Google Sheets save failed for ${key}:`, error.message);
+  }
+}
+
 // Allow keyboard input on login
 document.addEventListener('keydown', function(e) {
   if (document.getElementById('appWrapper').style.display==='block') return;
@@ -1602,7 +1662,10 @@ let designations = JSON.parse(localStorage.getItem('hsse_designations') || 'null
 if (!designations) { designations = DEFAULT_DESIGNATIONS; saveDesignations(); }
 let desigEditIndex = -1;
 
-function saveDesignations() { localStorage.setItem('hsse_designations', JSON.stringify(designations)); }
+function saveDesignations() {
+  localStorage.setItem('hsse_designations', JSON.stringify(designations));
+  saveSharedCollection('designations', designations);
+}
 
 // Rebuild the designation <select> in PPE modal from designations data
 function rebuildDesigSelect() {
@@ -1846,7 +1909,49 @@ if (records.length === 0) {
   savePPE();
 }
 
-function savePPE() { localStorage.setItem('hsse_ppe', JSON.stringify(records)); }
+function savePPE() {
+  localStorage.setItem('hsse_ppe', JSON.stringify(records));
+  saveSharedCollection('ppe', records);
+}
+
+function getPpeInventoryItem(type) {
+  const matchers = {
+    shoe: item => /shoe/i.test(item.name) || item.code === 'PPE-003',
+    helmet: item => /helmet/i.test(item.name) || item.code === 'PPE-001',
+    vest: item => /vest/i.test(item.name) || item.code === 'PPE-002',
+  };
+  return invItems.find(matchers[type]);
+}
+
+function getPpeIssueCounts(record) {
+  if (!record) return { shoe: 0, helmet: 0, vest: 0 };
+  return {
+    shoe: [record.shoe1, record.shoe2, record.shoe3].filter(item => item && item.issued).length,
+    helmet: record.helmet ? 1 : 0,
+    vest: record.vest ? 1 : 0,
+  };
+}
+
+function syncPpeInventory(previousRecord, nextRecord) {
+  const previousCounts = getPpeIssueCounts(previousRecord);
+  const nextCounts = getPpeIssueCounts(nextRecord);
+  let changed = false;
+
+  ['shoe', 'helmet', 'vest'].forEach(type => {
+    const delta = nextCounts[type] - previousCounts[type];
+    if (delta === 0) return;
+
+    const item = getPpeInventoryItem(type);
+    if (!item) return;
+
+    item.qty = Math.max(0, item.qty - delta);
+    changed = true;
+  });
+
+  if (!changed) return;
+  saveInventory();
+  if (document.getElementById('invTableBody')) renderInventory();
+}
 
 function isCompliant(r) { return r.shoe1.issued && r.helmet && r.vest; }
 
@@ -1964,6 +2069,7 @@ function saveRecord() {
   const id=document.getElementById('f_id').value.trim();
   const desig=document.getElementById('f_designation').value;
   if(!name||!id||!desig){alert('Please fill in Name, ID, and Designation.');return;}
+  const previousRecord = editIndex >= 0 ? records[editIndex] : null;
   const rec={
     name,id,designation:desig,
     shoe1:{issued:toggleState.shoe1,size:document.getElementById('f_shoe1_size').value.trim()},
@@ -1972,12 +2078,14 @@ function saveRecord() {
     helmet:toggleState.helmet, vest:toggleState.vest,
   };
   if(editIndex>=0) records[editIndex]=rec; else records.push(rec);
+  syncPpeInventory(previousRecord, rec);
   savePPE(); closeModal(); renderTable();
   showToast(editIndex>=0?'✅ Record updated!':'✅ Personnel added!');
 }
 
 function deleteRecord(i) {
   if(!confirm(`Delete record for "${records[i].name}"?`)) return;
+  syncPpeInventory(records[i], null);
   records.splice(i,1); savePPE(); renderTable(); showToast('🗑 Record deleted');
 }
 
@@ -2016,7 +2124,10 @@ if (invItems.length === 0) {
   saveInventory();
 }
 
-function saveInventory() { localStorage.setItem('hsse_inventory', JSON.stringify(invItems)); }
+function saveInventory() {
+  localStorage.setItem('hsse_inventory', JSON.stringify(invItems));
+  saveSharedCollection('inventory', invItems);
+}
 
 function getStockStatus(item) {
   if (item.qty === 0) return 'out';
@@ -2185,9 +2296,30 @@ document.getElementById('dateStamp').textContent='Last updated: '+new Date().toL
 // ═══════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════
-rebuildDesigSelect();
-renderTable();
-renderInventory();
+async function bootstrapApp() {
+  if (getSharedEndpoint()) {
+    const [sharedDesignations, sharedRecords, sharedInventory] = await Promise.all([
+      loadSharedCollection('designations', designations),
+      loadSharedCollection('ppe', records),
+      loadSharedCollection('inventory', invItems),
+    ]);
+
+    if (Array.isArray(sharedDesignations) && sharedDesignations.length) designations = sharedDesignations;
+    else await saveSharedCollection('designations', designations);
+
+    if (Array.isArray(sharedRecords) && sharedRecords.length) records = sharedRecords;
+    else await saveSharedCollection('ppe', records);
+
+    if (Array.isArray(sharedInventory) && sharedInventory.length) invItems = sharedInventory;
+    else await saveSharedCollection('inventory', invItems);
+  }
+
+  rebuildDesigSelect();
+  renderTable();
+  renderInventory();
+}
+
+bootstrapApp();
 </script>
 
 

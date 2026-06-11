@@ -574,6 +574,11 @@
   .form-group select option { background:var(--navy-mid); }
 
   .ppe-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; }
+  .ppe-tabs { display:flex; gap:8px; margin-bottom:12px; }
+  .ppe-tab { padding:8px 12px; border-radius:8px; border:1px solid var(--border); background:transparent; cursor:pointer; color:var(--text-dim); font-weight:600; }
+  .ppe-tab.active { background:var(--teal-mid); color:#fff; }
+  .ppe-tab-content { display:none; }
+  .ppe-tab-content.active { display:block; }
   .ppe-toggle-group { display:flex; flex-direction:column; gap:8px; }
   .ppe-toggle-group label { font-size:11px; letter-spacing:1px; color:var(--text-dim); text-transform:uppercase; font-family:'DM Mono',monospace; }
 
@@ -852,14 +857,20 @@
               <th rowspan="2" style="min-width:160px">Personnel</th>
               <th rowspan="2" style="min-width:140px">Designation</th>
               <th colspan="3" class="group-header" style="min-width:240px">🥾 Safety Shoes</th>
-              <th rowspan="2" class="group-header" style="min-width:100px">🪖 Helmet</th>
-              <th rowspan="2" class="group-header" style="min-width:100px">🦺 Safety Vest</th>
+              <th colspan="3" class="group-header" style="min-width:180px">🪖 Helmet</th>
+              <th colspan="3" class="group-header" style="min-width:180px">🦺 Safety Vest</th>
               <th rowspan="2" style="min-width:90px">Actions</th>
             </tr>
             <tr>
               <th style="text-align:center;border-left:1px solid rgba(0,168,168,0.1)">1st Pair</th>
               <th style="text-align:center">2nd Pair</th>
               <th style="text-align:center;border-right:1px solid rgba(0,168,168,0.1)">3rd Pair</th>
+              <th style="text-align:center;border-left:1px solid rgba(0,168,168,0.1)">1st</th>
+              <th style="text-align:center">2nd</th>
+              <th style="text-align:center;border-right:1px solid rgba(0,168,168,0.1)">3rd</th>
+              <th style="text-align:center;border-left:1px solid rgba(0,168,168,0.1)">1st</th>
+              <th style="text-align:center">2nd</th>
+              <th style="text-align:center;border-right:1px solid rgba(0,168,168,0.1)">3rd</th>
             </tr>
           </thead>
           <tbody id="tableBody"><tr>
@@ -1225,55 +1236,110 @@
           </div>
         </div>
         <div>
-          <div class="form-section-title">🥾 Safety Shoes</div>
-          <div class="ppe-grid">
-            <div class="ppe-toggle-group">
-              <label>1st Pair</label>
-              <div style="display:flex;gap:8px;align-items:center">
-                <div class="toggle-select" id="shoe1-toggle">
-                  <button onclick="setToggle(&#39;shoe1&#39;,true,this)" class="active-issued">Issued</button>
-                  <button onclick="setToggle(&#39;shoe1&#39;,false,this)">Pending</button>
+          <div class="ppe-tabs">
+            <button class="ppe-tab active" data-tab="shoes" onclick="switchPpeTab('shoes')">Shoes</button>
+            <button class="ppe-tab" data-tab="helmet" onclick="switchPpeTab('helmet')">Helmet</button>
+            <button class="ppe-tab" data-tab="vest" onclick="switchPpeTab('vest')">Vest</button>
+          </div>
+
+          <div id="tab-shoes" class="ppe-tab-content active">
+            <div class="form-section-title">🥾 Safety Shoes</div>
+            <div class="ppe-grid">
+              <div class="ppe-toggle-group">
+                <label>1st Pair</label>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <div class="toggle-select" id="shoe1-toggle">
+                    <button onclick="setToggle('shoe1',true,this)" class="active-issued">Issued</button>
+                    <button onclick="setToggle('shoe1',false,this)">Pending</button>
+                  </div>
+                  <input type="text" id="f_shoe1_size" placeholder="Size" style="width:70px;border-radius:8px;border:1px solid var(--border);background:rgba(0,0,0,0.25);padding:9px 8px;color:var(--text);font-size:13px;outline:none;">
                 </div>
-                <input type="text" id="f_shoe1_size" placeholder="Size" style="width:70px;border-radius:8px;border:1px solid var(--border);background:rgba(0,0,0,0.25);padding:9px 8px;color:var(--text);font-size:13px;outline:none;">
               </div>
-            </div>
-            <div class="ppe-toggle-group">
-              <label>2nd Pair</label>
-              <div style="display:flex;gap:8px;align-items:center">
-                <div class="toggle-select" id="shoe2-toggle">
-                  <button onclick="setToggle(&#39;shoe2&#39;,true,this)">Issued</button>
-                  <button onclick="setToggle(&#39;shoe2&#39;,false,this)" class="active-pending">Pending</button>
+              <div class="ppe-toggle-group">
+                <label>2nd Pair</label>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <div class="toggle-select" id="shoe2-toggle">
+                    <button onclick="setToggle('shoe2',true,this)">Issued</button>
+                    <button onclick="setToggle('shoe2',false,this)" class="active-pending">Pending</button>
+                  </div>
+                  <input type="text" id="f_shoe2_size" placeholder="Size" style="width:70px;border-radius:8px;border:1px solid var(--border);background:rgba(0,0,0,0.25);padding:9px 8px;color:var(--text);font-size:13px;outline:none;">
                 </div>
-                <input type="text" id="f_shoe2_size" placeholder="Size" style="width:70px;border-radius:8px;border:1px solid var(--border);background:rgba(0,0,0,0.25);padding:9px 8px;color:var(--text);font-size:13px;outline:none;">
               </div>
-            </div>
-            <div class="ppe-toggle-group">
-              <label>3rd Pair</label>
-              <div style="display:flex;gap:8px;align-items:center">
-                <div class="toggle-select" id="shoe3-toggle">
-                  <button onclick="setToggle(&#39;shoe3&#39;,true,this)">Issued</button>
-                  <button onclick="setToggle(&#39;shoe3&#39;,false,this)" class="active-pending">Pending</button>
+              <div class="ppe-toggle-group">
+                <label>3rd Pair</label>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <div class="toggle-select" id="shoe3-toggle">
+                    <button onclick="setToggle('shoe3',true,this)">Issued</button>
+                    <button onclick="setToggle('shoe3',false,this)" class="active-pending">Pending</button>
+                  </div>
+                  <input type="text" id="f_shoe3_size" placeholder="Size" style="width:70px;border-radius:8px;border:1px solid var(--border);background:rgba(0,0,0,0.25);padding:9px 8px;color:var(--text);font-size:13px;outline:none;">
                 </div>
-                <input type="text" id="f_shoe3_size" placeholder="Size" style="width:70px;border-radius:8px;border:1px solid var(--border);background:rgba(0,0,0,0.25);padding:9px 8px;color:var(--text);font-size:13px;outline:none;">
               </div>
             </div>
           </div>
-        </div>
-        <div>
-          <div class="form-section-title">Head &amp; Body Protection</div>
-          <div class="ppe-grid">
-            <div class="ppe-toggle-group">
-              <label>🪖 Helmet</label>
-              <div class="toggle-select" id="helmet-toggle">
-                <button onclick="setToggle(&#39;helmet&#39;,true,this)" class="active-issued">Issued</button>
-                <button onclick="setToggle(&#39;helmet&#39;,false,this)">Pending</button>
+
+          <div id="tab-helmet" class="ppe-tab-content">
+            <div class="form-section-title">🪖 Helmet</div>
+            <div class="ppe-grid">
+              <div class="ppe-toggle-group">
+                <label>🪖 Helmet — 1st</label>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <div class="toggle-select" id="helmet1-toggle">
+                    <button onclick="setToggle('helmet1',true,this)" class="active-issued">Issued</button>
+                    <button onclick="setToggle('helmet1',false,this)">Pending</button>
+                  </div>
+                </div>
+              </div>
+              <div class="ppe-toggle-group">
+                <label>🪖 Helmet — 2nd</label>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <div class="toggle-select" id="helmet2-toggle">
+                    <button onclick="setToggle('helmet2',true,this)">Issued</button>
+                    <button onclick="setToggle('helmet2',false,this)" class="active-pending">Pending</button>
+                  </div>
+                </div>
+              </div>
+              <div class="ppe-toggle-group">
+                <label>🪖 Helmet — 3rd</label>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <div class="toggle-select" id="helmet3-toggle">
+                    <button onclick="setToggle('helmet3',true,this)">Issued</button>
+                    <button onclick="setToggle('helmet3',false,this)" class="active-pending">Pending</button>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="ppe-toggle-group">
-              <label>🦺 Safety Vest</label>
-              <div class="toggle-select" id="vest-toggle">
-                <button onclick="setToggle(&#39;vest&#39;,true,this)" class="active-issued">Issued</button>
-                <button onclick="setToggle(&#39;vest&#39;,false,this)">Pending</button>
+          </div>
+
+          <div id="tab-vest" class="ppe-tab-content">
+            <div class="form-section-title">🦺 Safety Vest</div>
+            <div class="ppe-grid">
+              <div class="ppe-toggle-group">
+                <label>🦺 Safety Vest — 1st</label>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <div class="toggle-select" id="vest1-toggle">
+                    <button onclick="setToggle('vest1',true,this)" class="active-issued">Issued</button>
+                    <button onclick="setToggle('vest1',false,this)">Pending</button>
+                  </div>
+                </div>
+              </div>
+              <div class="ppe-toggle-group">
+                <label>🦺 Safety Vest — 2nd</label>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <div class="toggle-select" id="vest2-toggle">
+                    <button onclick="setToggle('vest2',true,this)">Issued</button>
+                    <button onclick="setToggle('vest2',false,this)" class="active-pending">Pending</button>
+                  </div>
+                </div>
+              </div>
+              <div class="ppe-toggle-group">
+                <label>🦺 Safety Vest — 3rd</label>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <div class="toggle-select" id="vest3-toggle">
+                    <button onclick="setToggle('vest3',true,this)">Issued</button>
+                    <button onclick="setToggle('vest3',false,this)" class="active-pending">Pending</button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -1823,40 +1889,47 @@ function exportDesigCSV() {
 let records = JSON.parse(localStorage.getItem('hsse_ppe') || '[]');
 let editIndex = -1;
 let currentFilter = 'all';
-const toggleState = { shoe1:true, shoe2:false, shoe3:false, helmet:true, vest:true };
+const toggleState = { shoe1:true, shoe2:false, shoe3:false, helmet1:true, helmet2:false, helmet3:false, vest1:true, vest2:false, vest3:false };
 
 if (records.length === 0) {
   records = [
     { name:'Khalid Al-Mansouri', id:'PORT-0001', designation:'HSSE Officer',
       shoe1:{issued:true,size:'42'}, shoe2:{issued:true,size:'42'}, shoe3:{issued:false,size:''},
-      helmet:true, vest:true },
+      helmet1:true, helmet2:false, helmet3:false, vest1:true, vest2:false, vest3:false },
     { name:'Fatima Binte Noor', id:'PORT-0002', designation:'Safety Inspector',
       shoe1:{issued:true,size:'37'}, shoe2:{issued:false,size:''}, shoe3:{issued:false,size:''},
-      helmet:true, vest:true },
+      helmet1:true, helmet2:false, helmet3:false, vest1:true, vest2:false, vest3:false },
     { name:'James Okonkwo', id:'PORT-0003', designation:'Crane Operator',
       shoe1:{issued:true,size:'44'}, shoe2:{issued:true,size:'44'}, shoe3:{issued:true,size:'44'},
-      helmet:true, vest:true },
+      helmet1:true, helmet2:false, helmet3:false, vest1:true, vest2:false, vest3:false },
     { name:'Ravi Shankar Menon', id:'PORT-0004', designation:'Stevedore',
       shoe1:{issued:true,size:'40'}, shoe2:{issued:false,size:''}, shoe3:{issued:false,size:''},
-      helmet:false, vest:true },
+      helmet1:false, helmet2:false, helmet3:false, vest1:true, vest2:false, vest3:false },
     { name:'Aisha Al-Farsi', id:'PORT-0005', designation:'Port Supervisor',
       shoe1:{issued:true,size:'38'}, shoe2:{issued:true,size:'38'}, shoe3:{issued:false,size:''},
-      helmet:true, vest:false },
+      helmet1:true, helmet2:false, helmet3:false, vest1:false, vest2:false, vest3:false },
   ];
   savePPE();
 }
 
 function savePPE() { localStorage.setItem('hsse_ppe', JSON.stringify(records)); }
 
-function isCompliant(r) { return r.shoe1.issued && r.helmet && r.vest; }
+function isCompliant(r) { 
+  const hasHelmet = r.helmet1 || r.helmet2 || r.helmet3;
+  const hasVest = r.vest1 || r.vest2 || r.vest3;
+  return r.shoe1.issued && hasHelmet && hasVest;
+}
 
 function updateStats() {
   const t=records.length, c=records.filter(isCompliant).length;
   document.getElementById('stat-total').textContent=t;
   document.getElementById('stat-compliant').textContent=c;
   document.getElementById('stat-pending').textContent=t-c;
-  document.getElementById('stat-helmets').textContent=records.filter(r=>r.helmet).length;
-  document.getElementById('stat-vests').textContent=records.filter(r=>r.vest).length;
+  // Count total issued helmets and vests across all three slots
+  const helmetCount = records.reduce((s,r)=>s + (r.helmet1?1:0) + (r.helmet2?1:0) + (r.helmet3?1:0), 0);
+  const vestCount = records.reduce((s,r)=>s + (r.vest1?1:0) + (r.vest2?1:0) + (r.vest3?1:0), 0);
+  document.getElementById('stat-helmets').textContent=helmetCount;
+  document.getElementById('stat-vests').textContent=vestCount;
 }
 
 function ppeBadge(issued, size) {
@@ -1878,7 +1951,7 @@ function renderTable() {
   });
   const body=document.getElementById('tableBody');
   if(data.length===0) {
-    body.innerHTML=`<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">🔍</div><p>No records found.</p></div></td></tr>`;
+    body.innerHTML=`<tr><td colspan="13"><div class="empty-state"><div class="empty-icon">🔍</div><p>No records found.</p></div></td></tr>`;
     document.getElementById('recordCount').textContent='0 records';
     updateStats(); return;
   }
@@ -1891,8 +1964,12 @@ function renderTable() {
       <td class="ppe-cell" style="border-left:1px solid rgba(0,168,168,0.1)">${ppeBadge(r.shoe1.issued,r.shoe1.size)}</td>
       <td class="ppe-cell">${ppeBadge(r.shoe2.issued,r.shoe2.size)}</td>
       <td class="ppe-cell" style="border-right:1px solid rgba(0,168,168,0.1)">${ppeBadge(r.shoe3.issued,r.shoe3.size)}</td>
-      <td class="ppe-cell">${ppeBadge(r.helmet,null)}</td>
-      <td class="ppe-cell">${ppeBadge(r.vest,null)}</td>
+      <td class="ppe-cell">${ppeBadge(r.helmet1,null)}</td>
+      <td class="ppe-cell">${ppeBadge(r.helmet2,null)}</td>
+      <td class="ppe-cell" style="border-right:1px solid rgba(0,168,168,0.1)">${ppeBadge(r.helmet3,null)}</td>
+      <td class="ppe-cell">${ppeBadge(r.vest1,null)}</td>
+      <td class="ppe-cell">${ppeBadge(r.vest2,null)}</td>
+      <td class="ppe-cell" style="border-right:1px solid rgba(0,168,168,0.1)">${ppeBadge(r.vest3,null)}</td>
       <td><div class="actions-cell">
         <button class="icon-btn edit" onclick="openEdit(${ri})" title="Edit">✏️</button>
         <button class="icon-btn del" onclick="deleteRecord(${ri})" title="Delete">🗑</button>
@@ -1924,13 +2001,38 @@ function resetToggles(r) {
     tog.querySelectorAll('button').forEach(b=>b.classList.remove('active-issued','active-pending'));
     tog.querySelectorAll('button')[v?0:1].classList.add(v?'active-issued':'active-pending');
   });
-  ['helmet','vest'].forEach(key=>{
-    const v=r?r[key]:true;
-    toggleState[key]=v;
+  ['helmet1','helmet2','helmet3','vest1','vest2','vest3'].forEach(key=>{
+    const v = r ? (key.startsWith('shoe') ? r[key].issued : r[key]) : (key==='shoe1' || key==='helmet1' || key==='vest1');
+    // For existing records, r[key] will be boolean for helmet/vest; for new records default first slot true
+    let val;
+    if (!r) {
+      val = (key==='helmet1' || key==='vest1');
+    } else {
+      if (r[key] !== undefined) {
+        val = (typeof r[key] === 'object') ? !!r[key].issued : !!r[key];
+      } else if (key.startsWith('helmet') && r.helmet !== undefined) {
+        val = !!r.helmet;
+      } else if (key.startsWith('vest') && r.vest !== undefined) {
+        val = !!r.vest;
+      } else {
+        val = false;
+      }
+    }
+    toggleState[key]=val;
     const tog=document.getElementById(`${key}-toggle`);
+    if(!tog) return;
     tog.querySelectorAll('button').forEach(b=>b.classList.remove('active-issued','active-pending'));
-    tog.querySelectorAll('button')[v?0:1].classList.add(v?'active-issued':'active-pending');
+    tog.querySelectorAll('button')[val?0:1].classList.add(val?'active-issued':'active-pending');
   });
+}
+
+function switchPpeTab(tab) {
+  document.querySelectorAll('.ppe-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.ppe-tab-content').forEach(c=>c.classList.remove('active'));
+  const btn = document.querySelector(`.ppe-tab[data-tab="${tab}"]`);
+  if(btn) btn.classList.add('active');
+  const content = document.getElementById('tab-'+tab);
+  if(content) content.classList.add('active');
 }
 
 function openModal() {
@@ -1939,6 +2041,7 @@ function openModal() {
   ['f_name','f_id','f_shoe1_size','f_shoe2_size','f_shoe3_size'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('f_designation').value='';
   resetToggles(null);
+  switchPpeTab('shoes');
   document.getElementById('modalOverlay').classList.add('open');
 }
 
@@ -1952,6 +2055,7 @@ function openEdit(i) {
   document.getElementById('f_shoe2_size').value=r.shoe2.size;
   document.getElementById('f_shoe3_size').value=r.shoe3.size;
   resetToggles(r);
+  switchPpeTab('shoes');
   document.getElementById('modalOverlay').classList.add('open');
 }
 
@@ -1969,7 +2073,8 @@ function saveRecord() {
     shoe1:{issued:toggleState.shoe1,size:document.getElementById('f_shoe1_size').value.trim()},
     shoe2:{issued:toggleState.shoe2,size:document.getElementById('f_shoe2_size').value.trim()},
     shoe3:{issued:toggleState.shoe3,size:document.getElementById('f_shoe3_size').value.trim()},
-    helmet:toggleState.helmet, vest:toggleState.vest,
+    helmet1:!!toggleState.helmet1, helmet2:!!toggleState.helmet2, helmet3:!!toggleState.helmet3,
+    vest1:!!toggleState.vest1, vest2:!!toggleState.vest2, vest3:!!toggleState.vest3,
   };
   if(editIndex>=0) records[editIndex]=rec; else records.push(rec);
   savePPE(); closeModal(); renderTable();
@@ -1982,13 +2087,14 @@ function deleteRecord(i) {
 }
 
 function exportCSV() {
-  const headers=['#','Name','ID','Designation','Shoe 1st','Sz1','Shoe 2nd','Sz2','Shoe 3rd','Sz3','Helmet','Vest'];
+  const headers=['#','Name','ID','Designation','Shoe 1st','Sz1','Shoe 2nd','Sz2','Shoe 3rd','Sz3','Helmet 1st','Helmet 2nd','Helmet 3rd','Vest 1st','Vest 2nd','Vest 3rd'];
   const rows=records.map((r,i)=>[
     i+1,r.name,r.id,r.designation,
     r.shoe1.issued?'Issued':'Pending',r.shoe1.size,
     r.shoe2.issued?'Issued':'Pending',r.shoe2.size,
     r.shoe3.issued?'Issued':'Pending',r.shoe3.size,
-    r.helmet?'Issued':'Pending', r.vest?'Issued':'Pending',
+    r.helmet1?'Issued':'Pending', r.helmet2?'Issued':'Pending', r.helmet3?'Issued':'Pending',
+    r.vest1?'Issued':'Pending', r.vest2?'Issued':'Pending', r.vest3?'Issued':'Pending',
   ]);
   const csv=[headers,...rows].map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
   const a=document.createElement('a');
